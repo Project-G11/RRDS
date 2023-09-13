@@ -52,11 +52,9 @@ class NNClassifier:
 
         #-----------------------------------------------------------------
         model = keras.Sequential()
-        print(insts_train.shape)
-        print(len(classes))
-        model.add(Embedding(input_dim=max_words, output_dim=32, input_length=max_words))
+        model.add(Embedding(input_dim=max_words, output_dim=50, input_length=max_words))
         model.add(Flatten())
-        model.add(Dense(128, activation='relu'))
+        model.add(Dense(64, activation='relu'))
         # model.add(keras.layers.Dropout(0.25))
         model.add(Dense(len(classes), activation='softmax'))  
 
@@ -66,7 +64,7 @@ class NNClassifier:
     
     
     def train(self, model, X_train, y_train,  X_test, y_test):
-        history = model.fit(X_train, y_train, epochs=6, batch_size=8, validation_data=(X_test, y_test))
+        history = model.fit(X_train, y_train, epochs=12, batch_size=8, validation_data=(X_test, y_test))
         self.evaluation(X_train, y_train, model, history)
         
     def evaluation(self, X_train, y_train, model, history):
