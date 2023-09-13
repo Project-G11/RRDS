@@ -29,12 +29,22 @@ class KeywordMatchingModel(MajorityClassModel):
         super().__init__(labels)
 
     def test(self, input):
-        if "bye" in input:
-            return "bye"
-        elif "thank" in input:
+        if "thank" in input:
             return "thankyou"
+        elif "bye" in input:
+            return "bye"
         elif "hi " in input or "hello" in input or "helo " in input:
             return "hello"
+        elif "what" in input or "phone" in input or "address" in input:
+            return "request"
+        elif "yes" in input:
+            return "affirm"
+        elif "no" in input:
+            return "negate"
+        elif "looking" in input or "area" in input:
+            return "inform"
+        elif "else" in input:
+            return "reqalts"
         else: 
             return self.majorityClass
     
