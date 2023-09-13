@@ -15,10 +15,9 @@ class NNClassifier:
     def build_model(self, insts_train, insts_test, labels_train, labels_test):
         # Define the maximum words in a sentence (the model needs to have that configured)
         max_words = 50
-        
+        # All the unique names of the labels(classes). They are 15
         classes = np.unique(labels_train)
-        print (classes)
-        
+        # Turn all the arrays in numpy arrays to manipulate the data easier
         insts_train = np.array(insts_train)
         insts_test = np.array(insts_test)
         labels_train = np.array(labels_train)
