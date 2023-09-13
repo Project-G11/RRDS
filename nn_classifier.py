@@ -9,12 +9,15 @@ import matplotlib.pyplot as plt
 class NNClassifier:
     
     def __init__(self, insts_train, insts_test, labels_train, labels_test):
+        # Initialize the NNClassifier with training and testing data
         self.model = self.build_model(insts_train, insts_test, labels_train, labels_test)
         
     def build_model(self, insts_train, insts_test, labels_train, labels_test):
+        # Define the maximum words in a sentence (the model needs to have that configured)
         max_words = 50
         
         classes = np.unique(labels_train)
+        print (classes)
         
         insts_train = np.array(insts_train)
         insts_test = np.array(insts_test)

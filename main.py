@@ -1,5 +1,7 @@
 from sklearn.model_selection import train_test_split
 from baselines import MajorityClassModel, KeywordMatchingModel
+from nn_classifier import NNClassifier
+
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
 
@@ -61,3 +63,6 @@ classifier = LogisticRegression()
 classifier.fit(input_train, labels_train)
 score = classifier.score(input_test, labels_test)
 print("Logistic regression accuracy is", score)
+
+# Create, train and evaluate the FFNN Classifier
+nn_model = NNClassifier(insts_train, insts_test, labels_train, labels_test)
