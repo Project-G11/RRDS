@@ -1,13 +1,9 @@
 import numpy as np
-import pandas as pd
-import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.layers import Dense, Embedding, Flatten
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.optimizers import Adam  
 import matplotlib.pyplot as plt
-from transformers import BertTokenizer, BertModel
+from tensorflow.keras.callbacks import EarlyStopping
+from transformers import BertTokenizer
 
 
 class NNClassifier:
@@ -76,7 +72,8 @@ class NNClassifier:
     
     
     def train(self, model, X_train, y_train,  X_test, y_test):
-        history = model.fit(X_train, y_train, epochs=12, batch_size=32, validation_data=(X_test, y_test))
+        early_stopping = EarlyStopping(monitor='val_accuracy', patience=3, restore_best_weights=True)
+        history = model.fit(X_train, y_train, epochs=20, batch_size=128, validation_data=(X_test, y_test), callbacks=[early_stopping])
         self.evaluation(X_train, y_train, model, history)
         
     def evaluation(self, X_train, y_train, model, history):
