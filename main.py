@@ -1,10 +1,12 @@
 from sklearn.model_selection import train_test_split
 from baselines import MajorityClassModel, KeywordMatchingModel
 from nn_classifier import NNClassifier
-from logregression import LogisticRegressionModel
+
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.linear_model import LogisticRegression
 
 # If True the duplicates are removed from the data
-no_duplicates = False
+no_duplicates = True
 
 # open data file
 txt = open("dialog_acts.dat").readlines()
@@ -49,3 +51,18 @@ print("Majority class model accuracy is", mc_acc)
 
 km_acc = km_model.evaluate(test_insts, test_labels)
 print("Keyword matching model accuracy is", km_acc)
+
+# vectorize data using bag of words model
+vectorizer = CountVectorizer()
+vectorizer.fit(insts_train)
+input_train = vectorizer.transform(insts_train)
+input_test  = vectorizer.transform(insts_test)
+
+# logistic regression classifier
+classifier = LogisticRegression()
+classifier.fit(input_train, labels_train)
+score = classifier.score(input_test, labels_test)
+print("Logistic regression accuracy is", score)
+
+# Create, train and evaluate the FFNN Classifier
+nn_model = NNClassifier(insts_train, insts_test, labels_train, labels_test)
