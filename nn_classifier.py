@@ -44,6 +44,7 @@ class NNClassifier:
         y_train = map_labels(labels_train,len(classes))        
         y_test = map_labels(labels_test,len(classes))
         
+        print(X_train.shape)
         
         model = keras.Sequential()
         model.add(Embedding(input_dim=X_train.max()+1, output_dim=50, input_length=max_words))

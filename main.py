@@ -10,9 +10,8 @@ no_duplicates = True
 # open data file
 txt = open("dialog_acts.dat").readlines()
 # split data in labels and instances list
-labels = []
-insts = []
-lines = []
+labels = insts = lines = []
+
 for line in txt:
     if no_duplicates:
         lines.append(line)
