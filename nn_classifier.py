@@ -8,11 +8,11 @@ from transformers import BertTokenizer
 
 class NNClassifier:
     
-    def __init__(self, insts_train, insts_test, labels_train, labels_test):
+    def __init__(self, insts_train, insts_test, labels_train, labels_test, no_duplicates):
         # Initialize the NNClassifier with training and testing data
-        self.model = self.build_model(insts_train, insts_test, labels_train, labels_test)
+        self.model = self.build_model(insts_train, insts_test, labels_train, labels_test, no_duplicates)
         
-    def build_model(self, insts_train, insts_test, labels_train, labels_test):
+    def build_model(self, insts_train, insts_test, labels_train, labels_test, no_duplicates):
         # Define the maximum words in a sentence (the model needs to have that configured)
         max_words = 150
         # All the unique names of the labels(classes). They are 15
@@ -22,17 +22,6 @@ class NNClassifier:
         labels_train = np.array(labels_train)
         labels_test = np.array(labels_test)
         
-        #-----------------------------------------------------------------
-        # Tokenize each sentence and add padding based on the max_words per sentence.
-        # tokenizer = Tokenizer(num_words=max_words, oov_token='<OOV>')
-        # tokenizer.fit_on_texts(insts_train)
-        
-        # sequences_train = tokenizer.texts_to_sequences(insts_train)
-        # X_train = pad_sequences(sequences_train, maxlen=max_words)
-        
-        # sequences_test = tokenizer.texts_to_sequences(insts_test)
-        # X_test = pad_sequences(sequences_test, maxlen=max_words)
-        
         def tokenize_sentences(list,max_words):
             tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
             token_ids = [tokenizer.encode(sentence, max_length=max_words, truncation=True, padding='max_length') for sentence in list]
@@ -41,8 +30,6 @@ class NNClassifier:
         X_train = tokenize_sentences(insts_train,max_words)
         X_test = tokenize_sentences(insts_test,max_words)
 
-        
-       
         def map_labels(labels_train,length):
             unique_labels = np.unique(labels_train)
             label_mapping={}
@@ -58,7 +45,6 @@ class NNClassifier:
         y_test = map_labels(labels_test,len(classes))
         
         
-        #-----------------------------------------------------------------
         model = keras.Sequential()
         model.add(Embedding(input_dim=X_train.max()+1, output_dim=50, input_length=max_words))
         model.add(Flatten())
@@ -68,12 +54,13 @@ class NNClassifier:
 
         model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
         
-        self.train(model, X_train, y_train, X_test, y_test)
+        self.train(model, X_train, y_train, X_test, y_test, no_duplicates)
     
     
-    def train(self, model, X_train, y_train,  X_test, y_test):
+    def train(self, model, X_train, y_train,  X_test, y_test, no_duplicates):
+        batch_size = 32 if no_duplicates else 128
         early_stopping = EarlyStopping(monitor='val_accuracy', patience=3, restore_best_weights=True)
-        history = model.fit(X_train, y_train, epochs=20, batch_size=128, validation_data=(X_test, y_test), callbacks=[early_stopping])
+        history = model.fit(X_train, y_train, epochs=12, batch_size=batch_size, validation_data=(X_test, y_test), callbacks=[early_stopping])
         self.evaluation(X_train, y_train, model, history)
         
     def evaluation(self, X_train, y_train, model, history):
