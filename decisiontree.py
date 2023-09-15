@@ -1,8 +1,8 @@
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.linear_model import LogisticRegression
+from sklearn import tree
 
-# classifier that assigns labels to data using logistic regression
-class LogisticRegressionModel:
+# classifier that assigns labels to data using a decision tree
+class DecisionTreeModel:
 
     # initialize classifier with training labels
     def __init__(self, insts_train, insts_test, labels_train, labels_test):
@@ -15,10 +15,10 @@ class LogisticRegressionModel:
 
     # build the classifier
     def build(self, input_train, input_test, labels_train, labels_test):
-        classifier = LogisticRegression(max_iter=500)
+        classifier = tree.DecisionTreeClassifier()
         classifier.fit(input_train, labels_train)
         self.evaluate(classifier, input_test, labels_test)
         
     # evaluates classifier and returns the accuracy
     def evaluate(self, classifier, input_test, labels_test):
-        print("Logistic regression accuracy is", classifier.score(input_test, labels_test))
+        print("Decision Tree accuracy is", classifier.score(input_test, labels_test))

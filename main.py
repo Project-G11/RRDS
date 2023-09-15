@@ -1,10 +1,11 @@
 from sklearn.model_selection import train_test_split
 from baselines import MajorityClassModel, KeywordMatchingModel
-from nn_classifier import NNClassifier
+#from nn_classifier import NNClassifier
 from logregression import LogisticRegressionModel
+from decisiontree import DecisionTreeModel
 
 # If True the duplicates are removed from the data
-no_duplicates = True
+no_duplicates = False
 
 # open data file
 txt = open("dialog_acts.dat").readlines()
@@ -53,5 +54,8 @@ print("Keyword matching model accuracy is", km_acc)
 # Apply the logistic regression classifier
 lr_model = LogisticRegressionModel(insts_train, insts_test, labels_train, labels_test)
 
+# Create, train and evaluate the logistic regression classifier
+dt_model = DecisionTreeModel(insts_train, insts_test, labels_train, labels_test)
+
 # Create, train and evaluate the FFNN Classifier
-nn_model = NNClassifier(insts_train, insts_test, labels_train, labels_test)
+#nn_model = NNClassifier(insts_train, insts_test, labels_train, labels_test)
