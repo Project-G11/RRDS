@@ -67,7 +67,7 @@ class NNClassifier:
     def evaluation(self, X_train, y_train, model, history):
         loss, accuracy = model.evaluate(X_train, y_train, verbose=0)
         print("Feedforward Neural Netrowk classifier accuracy:",history.history['val_accuracy'][-1])
-        self.show_results(history)
+        # self.show_results(history)
         
     def show_results(self, history):
         training_loss = history.history['loss']
