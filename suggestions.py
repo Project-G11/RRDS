@@ -1,32 +1,37 @@
 import csv
 from random import randrange
+import pandas as pd
 
 class SuggestRestaurants:
 
     def __init__(self):
-        self.filename = 'restaurant_info.csv'
+        self.restaurants = pd.read_csv('restaurant_info.csv')
 
-    def suggest(self, restaurants, number):
-        if number == 0:
-            print("There are no restaurants that conform to the requirements.")
-            return
-        if number == 1:
-            i = 0
+    def findrestaurants(self, area, food, price):
+        rest = self.restaurants
+        
+        if price == 'any' and area == 'any' and food == 'any':
+            suggestions = rest.copy()
+        elif price == 'any' and area == 'any':
+            suggestions = rest[rest['food'] == food]
+        elif price == 'any' and food == 'any':
+            suggestions = rest[rest['area'] == area]
+        elif area == 'any' and food == 'any':
+            suggestions = rest[rest['pricerange'] == price]
+        elif price == 'any':
+            suggestions = rest[(rest['area'] == area) & (rest['food'] == food)]
+        elif area == 'any':
+            suggestions = rest[(rest['pricerange'] == price) & (rest['food'] == food)]
+        elif food == 'any':
+            suggestions = rest[(rest['pricerange'] == price) & (rest['area'] == area)]
         else:
-            i = randrange(number-1)
-        print("A restaurant that conforms to the requirements is", restaurants[i][0], "with phone number", restaurants[i][1], ", address", restaurants[i][2], "and postal code", restaurants[i][3])
-        restaurants.pop(i)
-        return restaurants
-
-    def findrestaurants(self, price, area, food, restaurants):
-        with open(self.filename) as file:
-            reader = csv.reader(file)
-            number = 0
-            for row in reader:
-                try:
-                    if (price == "any" or price == row[1]) and (area == "any" or area == row[2]) and (food == "any" or food == row[3]):
-                        restaurants.append([row[0], row[4], row[5], row[6]])
-                        number += 1
-                except:
-                    continue
-        return restaurants, number
+            suggestions = rest[(rest['pricerange'] == price) & (rest['area'] == area) & (rest['food'] == food)]
+        
+        if not suggestions.empty:
+            return suggestions
+        else:
+            return None
+    
+    
+    def suggest(self, area, food, price): 
+        return self.findrestaurants(area, food, price)
