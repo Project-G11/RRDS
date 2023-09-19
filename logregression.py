@@ -1,5 +1,6 @@
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
+import pickle
 
 # classifier that assigns labels to data using logistic regression
 class LogisticRegressionModel:
@@ -17,6 +18,11 @@ class LogisticRegressionModel:
     def build(self, input_train, input_test, labels_train, labels_test):
         classifier = LogisticRegression(max_iter=500)
         classifier.fit(input_train, labels_train)
+        
+        #Creating a file for our model
+        with open('models/lr_model', 'wb') as f:
+            pickle.dump(classifier,f)
+        
         self.evaluate(classifier, input_test, labels_test)
         
     # evaluates classifier and returns the accuracy

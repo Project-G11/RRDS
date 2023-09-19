@@ -4,6 +4,7 @@ from tensorflow.keras.layers import Dense, Embedding, Flatten
 import matplotlib.pyplot as plt
 from tensorflow.keras.callbacks import EarlyStopping
 from transformers import BertTokenizer
+import pickle
 
 
 class NNClassifier:
@@ -62,6 +63,11 @@ class NNClassifier:
         batch_size = 32 if no_duplicates else 128
         early_stopping = EarlyStopping(monitor='val_accuracy', patience=3, restore_best_weights=True)
         history = model.fit(X_train, y_train, epochs=12, batch_size=batch_size, validation_data=(X_test, y_test), callbacks=[early_stopping])
+        
+        #Creating a file for our model
+        with open('models/ffnn_model', 'wb') as f:
+            pickle.dump(model,f)
+        
         self.evaluation(X_train, y_train, model, history)
         
     def evaluation(self, X_train, y_train, model, history):

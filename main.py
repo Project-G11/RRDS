@@ -5,6 +5,7 @@ from logregression import LogisticRegressionModel
 from decisiontree import DecisionTreeModel
 from suggestions import SuggestRestaurants
 from extractinfo import ExtractInformation
+import pickle
 
 # If True the duplicates are removed from the data
 no_duplicates = True
@@ -53,13 +54,19 @@ km_acc = km_model.evaluate(test_insts, test_labels)
 print("Keyword matching model accuracy is", km_acc)
 
 # Apply the logistic regression classifier
-lr_model = LogisticRegressionModel(insts_train, insts_test, labels_train, labels_test)
+LogisticRegressionModel(insts_train, insts_test, labels_train, labels_test)
+with open('models/logreg_model', 'rb') as f:
+    lr_model = pickle.load(f)
 
 # Create, train and evaluate the logistic regression classifier
-# dt_model = DecisionTreeModel(insts_train, insts_test, labels_train, labels_test)
+dt_model = DecisionTreeModel(insts_train, insts_test, labels_train, labels_test)
+with open('models/dt_model', 'rb') as f:
+    dt_model = pickle.load(f)
 
 # Create, train and evaluate the FFNN Classifier
-# nn_model = NNClassifier(insts_train, insts_test, labels_train, labels_test, no_duplicates)
+NNClassifier(insts_train, insts_test, labels_train, labels_test, no_duplicates)
+with open('models/ffnn_model', 'rb') as f:
+    ffnn_model = pickle.load(f)
 
 #Providing the restaurant recommendations
 suggestions = SuggestRestaurants()
