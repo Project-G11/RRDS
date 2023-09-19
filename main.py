@@ -4,6 +4,7 @@ from nn_classifier import NNClassifier
 from logregression import LogisticRegressionModel
 from decisiontree import DecisionTreeModel
 from suggestions import SuggestRestaurants
+from extractinfo import ExtractInformation
 
 # If True the duplicates are removed from the data
 no_duplicates = True
@@ -54,19 +55,23 @@ print("Keyword matching model accuracy is", km_acc)
 # Apply the logistic regression classifier
 lr_model = LogisticRegressionModel(insts_train, insts_test, labels_train, labels_test)
 
-# Create, train and evaluate the logistic regression classifier
 dt_model = DecisionTreeModel(insts_train, insts_test, labels_train, labels_test)
 
 # Create, train and evaluate the FFNN Classifier
 nn_model = NNClassifier(insts_train, insts_test, labels_train, labels_test, no_duplicates)
 
-#Providing the restaurant recommendations
-satisfied = False #temporary, no longer necessary when the customers input is implemented
+# Providing the restaurant recommendations
+satisfied = False # temporary, no longer necessary when the customers input is implemented
 suggestions = SuggestRestaurants()
 restaurants = []
 results, number = suggestions.findrestaurants("moderate", "north", "indian", restaurants) #example to test, should be filled with user input
 while (not satisfied):
     results = suggestions.suggest(results, number)
     number -= 1
-    if number==0: #should be replaced by whether customer is satisfied
+    if number==0: # should be replaced by whether customer is satisfied
         satisfied = True
+
+
+extr = ExtractInformation()
+info = extr.findwords("I want Indiaan food in the centre") # a test to see if it works
+print(info)
