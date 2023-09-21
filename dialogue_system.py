@@ -18,9 +18,10 @@ class DialogState(Enum):
     PHONE = 7
     ADDRESS = 8
     THANK_YOU = 9
-    GOODBYE = 10
-    SUGGEST = 11
-    END = 12
+    NOT_UNDERSTAND = 10
+    GOODBYE = 11
+    SUGGEST = 12
+    END = 13
     
 
 class DialogueSystem:
@@ -52,13 +53,20 @@ class DialogueSystem:
             'affirmfoodtype': ' restaurant is serving food',
             'confirmfoodtype': 'You are looking for a restaurant right?',
             'confirmarea': 'You are looking for a restaurant in the part of town right?',
-            'confirmpricerange': 'You are looking for a restaurant in the pricerange right?' ,
+            'confirmpricerange': 'You are looking for a restaurant in the pricerange right?',
+            'anyfood': 'You are looking for a restaurant serving any kind of food?',
+            'anyplace': 'You are looking for a restaurant at any place?',
+            'anyprice': 'You are looking for a restaurant with any price?',
             'goodbye': 'Goodbye!',
+            'thankyou': "You're welcome",
+            'notunderstand': "I didn't understand your request. Please repeat.", 
             'phone': 'The phone number for is ',
             'address': ' is on ',
-            'suggestion': ' is a nice place in the of town '
+            'suggestion': 'is a nice place in the side of town'
             }
         self.dialogue_acts = ['ack','affirm','bye','confirm','deny','hello','inform','negate','null','repeat','reqalts','reqmore','request','restart','thankyou']
+        
+        # Initialize food, place and price
         
         # Open the restaurants file and extract details for later use
         self.restaurants = pd.read_csv('restaurant_info.csv')
@@ -89,30 +97,81 @@ class DialogueSystem:
         # Initialize default system_response and next_state
         system_response = 'null'
         next_state = ''
+        info = {}
         
         # STATE TRANSITION
         if current_state == DialogState.INIT:
             if user_intent in ['null']:
                 next_state = DialogState.ASK_FOOD_TYPE
                 system_response = self.system_uterances['nofoodtype']
-            elif user_intent in ['hello', 'inform', 'affirm']:
+            elif user_intent in ['hello', 'inform', 'affirm','confirm','request']:
                 info = self.extract.findwords(user_utterance)
                 print(info)
-                system_response = "I'm sorry, I didn't understand that. Please start by greeting."
+                if not 'food' in info:
+                    print("~No food~")
+                    next_state = DialogState.ASK_FOOD_TYPE
+                    system_response = self.system_uterances['nofoodtype']
+                else:
+                    self.missing_slots.remove('food_type')
+                    if not 'area' in info:
+                        print("~No area~")
+                        next_state = DialogState.ASK_AREA
+                        system_response = self.system_uterances['noarea']
+                    else:
+                        self.missing_slots.remove('area')
+                        if not 'pricerange' in info:
+                            print("~No pricerange~")
+                            next_state = DialogState.ASK_PRICE_RANGE
+                            system_response = self.system_uterances['nopricerange']
+                        else:
+                            self.missing_slots.remove('price_range')           
+                            next_state = DialogState.SUGGEST
+                            suggestion = self.suggestions.suggest(info['area'],info['food'],info['pricerange']).iloc[0]
+                            system_response = self.system_uterances['suggestion']
+                            if info['pricerange'] != 'any':
+                                system_response = '{} {} {} {} and it is in the {} price range.'.format(suggestion.restaurantname, system_response[:18], suggestion.area, system_response[23:], suggestion.pricerange)
+                            else:
+                                system_response = '{} {} {} {}'.format(suggestion.restaurantname, system_response[:18], suggestion.area, system_response[23:])
+                                
+            elif user_intent in ['bye']:
+                next_state = DialogState.END
+                system_response = self.system_uterances['goodbye']
+            elif user_intent in ['thankyou']:
+                next_state = DialogState.THANK_YOU
+                system_response = self.system_uterances['thankyou']
+            else:
+                next_state = DialogState.NOT_UNDERSTAND
+                system_response = self.system_uterances['notunderstand']
 
+        else:
+            pass
         
-        return next_state, system_response
+        print("Next state: ", next_state, " System response: ", system_response)
+        return next_state, system_response, info
     
+    def suggest(self,info):
+        suggestion = self.suggestions.suggest(info['area'],info['food'],info['pricerange']).iloc[0]  
+        print(suggestion)
+        
+    def print_response(self,response):
+        print('> System:',response)
     
     def run_dialogue(self):
         # Clear console
         os.system('cls')
         # Default state
         current_state = DialogState.INIT
-        print(self.system_uterances['greet'])
+        self.print_response(self.system_uterances['greet'])
         # Iterative dialogue until user ends the conversation       
         while current_state not in [DialogState.END, DialogState.GOODBYE]:
-            user_utterance = input("> ").lower()
-            current_state, system_response = self.state_transition(current_state, user_utterance)
+            user_utterance = input(">>> ").lower()
+            current_state, system_response, info = self.state_transition(current_state, user_utterance)
+   
+            self.print_response(system_response)
+            
+            if current_state == DialogState.END:
+                break
+            
+            
             
             
