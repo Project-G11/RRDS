@@ -79,5 +79,5 @@ extr = ExtractInformation()
 info = extr.findwords("I want Indiaan food in the centre") # a test to see if it works
 print(info)
 
-dialogue_system = DialogueSystem(lr_model,insts_train)
-dialogue_system.dialogue(suggestions,extr)
+dialogue_system = DialogueSystem(lr_model,insts_train,extr)
+dialogue_system.run_dialogue(suggestions)
