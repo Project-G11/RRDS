@@ -9,12 +9,14 @@ from dialogue_system import DialogueSystem
 import pickle
 
 # If True the duplicates are removed from the data
-no_duplicates = True
+no_duplicates = False
 
 # open data file
 txt = open("dialog_acts.dat").readlines()
 # split data in labels and instances list
-labels = insts = lines = []
+labels = []
+insts = []
+lines = []
 
 for line in txt:
     if no_duplicates:
@@ -38,6 +40,7 @@ if no_duplicates:
     
 # split data in test and training data
 insts_train, insts_test, labels_train, labels_test = train_test_split(insts, labels, test_size=0.15, random_state=42)
+
 
 # get baseline models
 train_labels = labels_train
@@ -65,9 +68,9 @@ with open('models/dt_model', 'rb') as f:
     dt_model = pickle.load(f)
 
 # Create, train and evaluate the FFNN Classifier
-# NNClassifier(insts_train, insts_test, labels_train, labels_test, no_duplicates)
-# with open('models/ffnn_model', 'rb') as f:
-#     ffnn_model = pickle.load(f)
+NNClassifier(insts_train, insts_test, labels_train, labels_test, no_duplicates)
+with open('models/ffnn_model', 'rb') as f:
+    ffnn_model = pickle.load(f)
 
 #Providing the restaurant recommendations
 suggestions = SuggestRestaurants()
@@ -79,5 +82,5 @@ extr = ExtractInformation()
 info = extr.findwords("I want Indiaan food in the centre") # a test to see if it works
 print(info)
 
-dialogue_system = DialogueSystem(lr_model,insts_train,extr)
+dialogue_system = DialogueSystem(ffnn_model,insts_train,extr)
 dialogue_system.run_dialogue(suggestions)
