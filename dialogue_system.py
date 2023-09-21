@@ -100,6 +100,7 @@ class DialogueSystem:
         info = {}
         
         # STATE TRANSITION
+        #-- First Reply --
         if current_state == DialogState.INIT:
             if user_intent in ['null']:
                 next_state = DialogState.ASK_FOOD_TYPE
@@ -142,7 +143,8 @@ class DialogueSystem:
             else:
                 next_state = DialogState.NOT_UNDERSTAND
                 system_response = self.system_uterances['notunderstand']
-
+        
+        #-- Other Replies --
         else:
             pass
         
