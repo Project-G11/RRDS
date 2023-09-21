@@ -2,6 +2,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from enum import Enum
 import numpy as np
 from transformers import BertTokenizer
+import pandas as pd
+import os
 
 
 
@@ -23,7 +25,7 @@ class DialogState(Enum):
 
 class DialogueSystem:
     
-    def __init__(self,lr_model,insts_train,extract):
+    def __init__(self,lr_model,insts_train,extract,suggestions):
         # Initialize classifier, vectorizer and extract
         self.classifier = lr_model
         self.vectorizer = CountVectorizer().fit(insts_train)
@@ -58,23 +60,35 @@ class DialogueSystem:
             }
         self.dialogue_acts = ['ack','affirm','bye','confirm','deny','hello','inform','negate','null','repeat','reqalts','reqmore','request','restart','thankyou']
         
+        # Open the restaurants file and extract details for later use
+        self.restaurants = pd.read_csv('restaurant_info.csv')
+        
+        # Initalize suggestion function
+        self.suggestions = suggestions
+        
+        
+        
     def preprocess_sentence(self,sentence, max_words):
         tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
         token_ids = tokenizer.encode(sentence, max_length=max_words, truncation=True, padding='max_length')
         return np.array(token_ids)
 
     def classify_intent(self,utter):
-        utter_vectorized = self.preprocess_sentence(utter,150)
-        new_state = self.classifier.predict(np.array([utter_vectorized]))
-        print(new_state.shape)
+        try:
+            utter_vectorized = self.preprocess_sentence(utter,150)
+            new_state = self.dialogue_acts[np.argmax(self.classifier.predict(np.array([utter_vectorized])))]
+        except:
+            utter_vectorized = self.vectorizer.transform([utter])
+            new_state = self.classifier.predict(utter_vectorized)
         return new_state
         
     def state_transition(self,current_state,user_utterance):
         # Predicting the user's intent
         user_intent = self.classify_intent(user_utterance)
         print(user_intent)
-        # Initialize default system_response
+        # Initialize default system_response and next_state
         system_response = 'null'
+        next_state = ''
         
         # STATE TRANSITION
         if current_state == DialogState.INIT:
@@ -82,15 +96,17 @@ class DialogueSystem:
                 next_state = DialogState.ASK_FOOD_TYPE
                 system_response = self.system_uterances['nofoodtype']
             elif user_intent in ['hello', 'inform', 'affirm']:
-                
-                next_state = DialogState.INIT
+                info = self.extract.findwords(user_utterance)
+                print(info)
                 system_response = "I'm sorry, I didn't understand that. Please start by greeting."
 
         
-        return current_state, system_response
+        return next_state, system_response
     
     
-    def run_dialogue(self,suggestions):
+    def run_dialogue(self):
+        # Clear console
+        os.system('cls')
         # Default state
         current_state = DialogState.INIT
         print(self.system_uterances['greet'])

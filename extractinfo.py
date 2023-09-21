@@ -11,13 +11,13 @@ class ExtractInformation:
         pricerange = df.pricerange.unique().tolist()
         area = df.area.unique().tolist()
         food = df.food.unique().tolist()
-        self.keywords["pricerange"] = pricerange
-        self.keywords["area"] = area
-        self.keywords["food"] = food
+        self.keywords["pricerange"] = [str(kw).lower().strip() for kw in pricerange]
+        self.keywords["area"] = [str(kw).lower().strip() for kw in area]
+        self.keywords["food"] = [str(kw).lower().strip() for kw in food]
 
     def findwords(self, input):
         words = input.lower().split()
-        print(words)
+        # print(words)
         for word in words:
             if len(word)>3:
                 for i in self.keywords:

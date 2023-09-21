@@ -47,28 +47,28 @@ train_labels = labels_train
 test_labels = labels_test
 test_insts = insts_test
 
-mc_model =  MajorityClassModel(train_labels)
-km_model =  KeywordMatchingModel(train_labels)
+# mc_model =  MajorityClassModel(train_labels)
+# km_model =  KeywordMatchingModel(train_labels)
 
 # get accuracies
-mc_acc = mc_model.evaluate(test_insts, test_labels)
-print("Majority class model accuracy is", mc_acc)
+# mc_acc = mc_model.evaluate(test_insts, test_labels)
+# print("Majority class model accuracy is", mc_acc)
 
-km_acc = km_model.evaluate(test_insts, test_labels)
-print("Keyword matching model accuracy is", km_acc)
+# km_acc = km_model.evaluate(test_insts, test_labels)
+# print("Keyword matching model accuracy is", km_acc)
 
 # Apply the logistic regression classifier
-LogisticRegressionModel(insts_train, insts_test, labels_train, labels_test)
+# LogisticRegressionModel(insts_train, insts_test, labels_train, labels_test)
 with open('models/lr_model', 'rb') as f:
     lr_model = pickle.load(f)
 
 # Create, train and evaluate the logistic regression classifier
-dt_model = DecisionTreeModel(insts_train, insts_test, labels_train, labels_test)
+# dt_model = DecisionTreeModel(insts_train, insts_test, labels_train, labels_test)
 with open('models/dt_model', 'rb') as f:
     dt_model = pickle.load(f)
 
 # Create, train and evaluate the FFNN Classifier
-NNClassifier(insts_train, insts_test, labels_train, labels_test, no_duplicates)
+# NNClassifier(insts_train, insts_test, labels_train, labels_test, no_duplicates)
 with open('models/ffnn_model', 'rb') as f:
     ffnn_model = pickle.load(f)
 
@@ -79,8 +79,8 @@ print(results)
 
 
 extr = ExtractInformation()
-info = extr.findwords("I want Indiaan food in the centre") # a test to see if it works
-print(info)
+# info = extr.findwords("I want Indiaan food in the centre") # a test to see if it works
+# print(info)
 
-dialogue_system = DialogueSystem(ffnn_model,insts_train,extr)
-dialogue_system.run_dialogue(suggestions)
+dialogue_system = DialogueSystem(lr_model,insts_train,extr,suggestions)
+dialogue_system.run_dialogue()
