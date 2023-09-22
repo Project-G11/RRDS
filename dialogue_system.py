@@ -77,6 +77,9 @@ class DialogueSystem:
         # Initialize info
         self.info = {}
         
+        # Initialize food, area and price tries
+        self.tries = {'food':2, 'area':2, 'pricerange':2}
+        
         
         
     def preprocess_sentence(self,sentence, max_words):
@@ -115,18 +118,21 @@ class DialogueSystem:
                     print("~No food~")
                     next_state = DialogState.ASK_FOOD_TYPE
                     system_response = self.system_uterances['nofoodtype']
+                    self.tries['food'] = self.tries['food'] -1
                 else:
                     self.missing_slots.remove('food_type')
                     if not 'area' in self.info:
                         print("~No area~")
                         next_state = DialogState.ASK_AREA
                         system_response = self.system_uterances['noarea']
+                        self.tries['area'] = self.tries['area'] -1
                     else:
                         self.missing_slots.remove('area')
                         if not 'pricerange' in self.info:
                             print("~No pricerange~")
                             next_state = DialogState.ASK_PRICE_RANGE
                             system_response = self.system_uterances['nopricerange']
+                            self.tries['pricerange'] = self.tries['pricerange'] -1
                         else:
                             self.missing_slots.remove('price_range')
                             next_state = DialogState.SUGGEST
@@ -156,13 +162,18 @@ class DialogueSystem:
                     self.info['food'] = food_info['food']
                     self.missing_slots.remove('food_type')
                 else:
-                    if current_state == DialogState.ASK_FOOD_TYPE:
+                    if current_state == DialogState.ASK_FOOD_TYPE and self.tries['food'] == 0:
                         self.info['food'] = 'any'
                         self.missing_slots.remove('food_type')
-                    else:
+                    elif current_state == DialogState.ASK_FOOD_TYPE and self.tries['food'] == 1:
                         # Ask if the user wants any food type
                         next_state = DialogState.ASK_FOOD_TYPE
                         system_response = self.system_uterances['anyfood']
+                        self.tries['food'] = self.tries['food'] -1
+                    else:
+                        next_state = DialogState.ASK_FOOD_TYPE
+                        system_response = self.system_uterances['nofoodtype']
+                        self.tries['food'] = self.tries['food'] -1
             
             if 'food' in self.info and 'area' not in self.info:
                 # Check if user mentioned an area preference
@@ -171,13 +182,18 @@ class DialogueSystem:
                     self.info['area'] = area_info['area']
                     self.missing_slots.remove('area')
                 else:
-                    if current_state == DialogState.ASK_AREA:
+                    if current_state == DialogState.ASK_AREA and self.tries['area'] == 0:
                         self.info['area'] = 'any'
                         self.missing_slots.remove('area')
-                    else:
+                    elif current_state == DialogState.ASK_AREA and self.tries['area'] == 1:
                         # Ask if the user wants any area
                         next_state = DialogState.ASK_AREA
                         system_response = self.system_uterances['anyplace']
+                        self.tries['area'] = self.tries['area'] -1
+                    else:
+                        next_state = DialogState.ASK_AREA
+                        system_response = self.system_uterances['noarea']
+                        self.tries['area'] = self.tries['area'] -1
             
             if 'food' in self.info and 'area' in self.info and 'pricerange' not in self.info:
                 # Check if user mentioned a price range preference
@@ -186,13 +202,18 @@ class DialogueSystem:
                     self.info['pricerange'] = pricerange_info['pricerange']
                     self.missing_slots.remove('price_range')
                 else:
-                    if current_state == DialogState.ASK_PRICE_RANGE:
+                    if current_state == DialogState.ASK_PRICE_RANGE and self.tries['pricerange'] == 0:
                         self.info['pricerange'] = 'any'
                         self.missing_slots.remove('price_range')
-                    else:
+                    elif current_state == DialogState.ASK_PRICE_RANGE and self.tries['pricerange'] == 1:
                         # Ask if the user wants any price range
                         next_state = DialogState.ASK_PRICE_RANGE
                         system_response = self.system_uterances['anyprice']
+                        self.tries['pricerange'] = self.tries['pricerange'] -1
+                    else:
+                        next_state = DialogState.ASK_PRICE_RANGE
+                        system_response = self.system_uterances['nopricerange']
+                        self.tries['pricerange'] = self.tries['pricerange'] -1
             
             if 'food' in self.info and 'area' in self.info and 'pricerange' in self.info:
                 # All slots filled, suggest a restaurant
