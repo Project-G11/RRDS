@@ -78,8 +78,6 @@ class DialogueSystem:
         # Initialize info
         self.info = {}
         
-        
-        
     def preprocess_sentence(self,sentence, max_words):
         tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
         token_ids = tokenizer.encode(sentence, max_length=max_words, truncation=True, padding='max_length')
@@ -199,7 +197,7 @@ class DialogueSystem:
 
                 
         print("Next state: ", next_state, " System response: ", system_response)
-        return next_state, system_response, self.info
+        return next_state, system_response
     
     def findwords(self, input):
         words = input.lower().split()
@@ -242,7 +240,7 @@ class DialogueSystem:
         # Iterative dialogue until user ends the conversation       
         while current_state not in [DialogState.END, DialogState.GOODBYE]:
             user_utterance = input(">>> ").lower()
-            current_state, system_response, info = self.state_transition(current_state, user_utterance)
+            current_state, system_response = self.state_transition(current_state, user_utterance)
    
             self.print_response(system_response)
             
