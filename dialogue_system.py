@@ -69,7 +69,7 @@ class DialogueSystem:
         # Initialize food, place and price
         
         # Open the restaurants file and extract details for later use
-        self.restaurants = pd.read_csv('restaurant_info.csv')
+        self.restaurants = pd.read_csv('data/restaurant_info.csv')
         
         # Initalize suggestion function
         self.suggestions = suggestions

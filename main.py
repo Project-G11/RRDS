@@ -12,7 +12,7 @@ import pickle
 no_duplicates = False
 
 # open data file
-txt = open("dialog_acts.dat").readlines()
+txt = open("data/dialog_acts.dat").readlines()
 # split data in labels and instances list
 labels = []
 insts = []
@@ -64,13 +64,13 @@ with open('models/lr_model', 'rb') as f:
 
 # Create, train and evaluate the logistic regression classifier
 # dt_model = DecisionTreeModel(insts_train, insts_test, labels_train, labels_test)
-with open('models/dt_model', 'rb') as f:
-    dt_model = pickle.load(f)
+# with open('models/dt_model', 'rb') as f:
+#     dt_model = pickle.load(f)
 
-# Create, train and evaluate the FFNN Classifier
-# NNClassifier(insts_train, insts_test, labels_train, labels_test, no_duplicates)
-with open('models/ffnn_model', 'rb') as f:
-    ffnn_model = pickle.load(f)
+# # Create, train and evaluate the FFNN Classifier
+# # NNClassifier(insts_train, insts_test, labels_train, labels_test, no_duplicates)
+# with open('models/ffnn_model', 'rb') as f:
+#     ffnn_model = pickle.load(f)
 
 #Providing the restaurant recommendations
 suggestions = SuggestRestaurants()

@@ -5,7 +5,7 @@ import pandas as pd
 class SuggestRestaurants:
 
     def __init__(self):
-        self.restaurants = pd.read_csv('restaurant_info.csv')
+        self.restaurants = pd.read_csv('data/restaurant_info.csv')
 
     def findrestaurants(self, area, food, price):
         rest = self.restaurants
