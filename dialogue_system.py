@@ -78,6 +78,9 @@ class DialogueSystem:
         # Initialize info
         self.info = {}
         
+        # Initialize food, area and price tries
+        self.tries = {'food':2, 'area':2, 'pricerange':2}
+        
     def preprocess_sentence(self,sentence, max_words):
         tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
         token_ids = tokenizer.encode(sentence, max_length=max_words, truncation=True, padding='max_length')
@@ -114,19 +117,22 @@ class DialogueSystem:
                     print("~No food~")
                     next_state = DialogState.ASK_FOOD_TYPE
                     system_response = self.system_uterances['nofoodtype']
+                    self.tries['food'] = self.tries['food'] -1
                 else:
                     if not 'area' in self.info:
                         print("~No area~")
                         next_state = DialogState.ASK_AREA
                         system_response = self.system_uterances['noarea']
+                        self.tries['area'] = self.tries['area'] -1
                     else:
                         if not 'pricerange' in self.info:
                             print("~No pricerange~")
                             next_state = DialogState.ASK_PRICE_RANGE
                             system_response = self.system_uterances['nopricerange']
+                            self.tries['pricerange'] = self.tries['pricerange'] -1
                         else:
                             next_state = DialogState.SUGGEST
-                            suggestion = self.suggestions.suggest(self.info['area'],self.info['food'],self.info['pricerange']).iloc[0]
+                            suggestion = self.suggest()
                             system_response = self.system_uterances['suggestion']
                             if self.info['pricerange'] != None:
                                 system_response = '{} {} {} {} and it is in the {} price range.'.format(suggestion.restaurantname, system_response[:18], suggestion.area, system_response[23:], suggestion.pricerange)
@@ -151,12 +157,17 @@ class DialogueSystem:
                 if food_info is not None and 'food' in food_info:
                     self.info['food'] = food_info['food']
                 else:
-                    if current_state == DialogState.ASK_FOOD_TYPE:
+                    if current_state == DialogState.ASK_FOOD_TYPE and self.tries['food'] == 0:
                         self.info['food'] = None
-                    else:
+                    elif current_state == DialogState.ASK_FOOD_TYPE and self.tries['food'] == 1:
                         # Ask if the user wants any food type
                         next_state = DialogState.ASK_FOOD_TYPE
                         system_response = self.system_uterances['anyfood']
+                        self.tries['food'] = self.tries['food'] -1
+                    else:
+                        next_state = DialogState.ASK_FOOD_TYPE
+                        system_response = self.system_uterances['nofoodtype']
+                        self.tries['food'] = self.tries['food'] -1
             
             if 'food' in self.info and 'area' not in self.info:
                 # Check if user mentioned an area preference
@@ -164,12 +175,17 @@ class DialogueSystem:
                 if area_info is not None and 'area' in area_info:
                     self.info['area'] = area_info['area']
                 else:
-                    if current_state == DialogState.ASK_AREA:
+                    if current_state == DialogState.ASK_AREA and self.tries['area'] == 0:
                         self.info['area'] = None
-                    else:
+                    elif current_state == DialogState.ASK_AREA and self.tries['area'] == 1:
                         # Ask if the user wants any area
                         next_state = DialogState.ASK_AREA
                         system_response = self.system_uterances['anyplace']
+                        self.tries['area'] = self.tries['area'] -1
+                    else:
+                        next_state = DialogState.ASK_AREA
+                        system_response = self.system_uterances['noarea']
+                        self.tries['area'] = self.tries['area'] -1
             
             if 'food' in self.info and 'area' in self.info and 'pricerange' not in self.info:
                 # Check if user mentioned a price range preference
@@ -177,12 +193,17 @@ class DialogueSystem:
                 if pricerange_info is not None and 'pricerange' in pricerange_info:
                     self.info['pricerange'] = pricerange_info['pricerange']
                 else:
-                    if current_state == DialogState.ASK_PRICE_RANGE:
+                    if current_state == DialogState.ASK_PRICE_RANGE and self.tries['pricerange'] == 0:
                         self.info['pricerange'] = None
-                    else:
+                    elif current_state == DialogState.ASK_PRICE_RANGE and self.tries['pricerange'] == 1:
                         # Ask if the user wants any price range
                         next_state = DialogState.ASK_PRICE_RANGE
                         system_response = self.system_uterances['anyprice']
+                        self.tries['pricerange'] = self.tries['pricerange'] -1
+                    else:
+                        next_state = DialogState.ASK_PRICE_RANGE
+                        system_response = self.system_uterances['nopricerange']
+                        self.tries['pricerange'] = self.tries['pricerange'] -1
             
             if 'food' in self.info and 'area' in self.info and 'pricerange' in self.info:
                 # All slots filled, suggest a restaurant
