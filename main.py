@@ -72,15 +72,9 @@ with open('models/lr_model', 'rb') as f:
 # with open('models/ffnn_model', 'rb') as f:
 #     ffnn_model = pickle.load(f)
 
-#Providing the restaurant recommendations
-suggestions = SuggestRestaurants()
-results = suggestions.suggest("north", "indian", "moderate")
-print(results)
-
-
 extr = ExtractInformation()
 # info = extr.findwords("I want Indiaan food in the centre") # a test to see if it works
 # print(info)
 
-dialogue_system = DialogueSystem(lr_model,insts_train,extr,suggestions)
+dialogue_system = DialogueSystem(lr_model,insts_train,extr)
 dialogue_system.run_dialogue()

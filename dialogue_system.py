@@ -26,7 +26,7 @@ class DialogState(Enum):
 
 class DialogueSystem:
     
-    def __init__(self,lr_model,insts_train,extract,suggestions):
+    def __init__(self,lr_model,insts_train,extract):
         # Initialize classifier, vectorizer and extract
         self.classifier = lr_model
         self.vectorizer = CountVectorizer().fit(insts_train)
@@ -36,11 +36,6 @@ class DialogueSystem:
         self.food_type = None
         self.area = None
         self.price_range = None
-        self.missing_slots = []
-        self.missing_slots.append('food_type')
-        self.missing_slots.append('area')
-        self.missing_slots.append('price_range')
-        print(self.missing_slots)
         
         # Initialize system responses
         self.system_uterances = {
@@ -70,9 +65,6 @@ class DialogueSystem:
         
         # Open the restaurants file and extract details for later use
         self.restaurants = pd.read_csv('data/restaurant_info.csv')
-        
-        # Initalize suggestion function
-        self.suggestions = suggestions
         
         # Initialize info
         self.info = {}
@@ -116,23 +108,20 @@ class DialogueSystem:
                     next_state = DialogState.ASK_FOOD_TYPE
                     system_response = self.system_uterances['nofoodtype']
                 else:
-                    self.missing_slots.remove('food_type')
                     if not 'area' in self.info:
                         print("~No area~")
                         next_state = DialogState.ASK_AREA
                         system_response = self.system_uterances['noarea']
                     else:
-                        self.missing_slots.remove('area')
                         if not 'pricerange' in self.info:
                             print("~No pricerange~")
                             next_state = DialogState.ASK_PRICE_RANGE
                             system_response = self.system_uterances['nopricerange']
                         else:
-                            self.missing_slots.remove('price_range')
                             next_state = DialogState.SUGGEST
                             suggestion = self.suggestions.suggest(self.info['area'],self.info['food'],self.info['pricerange']).iloc[0]
                             system_response = self.system_uterances['suggestion']
-                            if self.info['pricerange'] != 'any':
+                            if self.info['pricerange'] != None:
                                 system_response = '{} {} {} {} and it is in the {} price range.'.format(suggestion.restaurantname, system_response[:18], suggestion.area, system_response[23:], suggestion.pricerange)
                             else:
                                 system_response = '{} {} {} {}'.format(suggestion.restaurantname, system_response[:18], suggestion.area, system_response[23:])
@@ -154,11 +143,9 @@ class DialogueSystem:
                 food_info = self.extract.findwords(user_utterance)
                 if food_info is not None and 'food' in food_info:
                     self.info['food'] = food_info['food']
-                    self.missing_slots.remove('food_type')
                 else:
                     if current_state == DialogState.ASK_FOOD_TYPE:
-                        self.info['food'] = 'any'
-                        self.missing_slots.remove('food_type')
+                        self.info['food'] = None
                     else:
                         # Ask if the user wants any food type
                         next_state = DialogState.ASK_FOOD_TYPE
@@ -169,11 +156,9 @@ class DialogueSystem:
                 area_info = self.extract.findwords(user_utterance)
                 if area_info is not None and 'area' in area_info:
                     self.info['area'] = area_info['area']
-                    self.missing_slots.remove('area')
                 else:
                     if current_state == DialogState.ASK_AREA:
-                        self.info['area'] = 'any'
-                        self.missing_slots.remove('area')
+                        self.info['area'] = None
                     else:
                         # Ask if the user wants any area
                         next_state = DialogState.ASK_AREA
@@ -184,11 +169,9 @@ class DialogueSystem:
                 pricerange_info = self.extract.findwords(user_utterance)
                 if pricerange_info is not None and 'pricerange' in pricerange_info:
                     self.info['pricerange'] = pricerange_info['pricerange']
-                    self.missing_slots.remove('price_range')
                 else:
                     if current_state == DialogState.ASK_PRICE_RANGE:
-                        self.info['pricerange'] = 'any'
-                        self.missing_slots.remove('price_range')
+                        self.info['pricerange'] = None
                     else:
                         # Ask if the user wants any price range
                         next_state = DialogState.ASK_PRICE_RANGE
@@ -197,9 +180,9 @@ class DialogueSystem:
             if 'food' in self.info and 'area' in self.info and 'pricerange' in self.info:
                 # All slots filled, suggest a restaurant
                 next_state = DialogState.SUGGEST
-                suggestion = self.suggestions.suggest(self.info['area'], self.info['food'], self.info['pricerange']).iloc[0]
+                suggestion = self.suggest()
                 system_response = self.system_uterances['suggestion']
-                if self.info['pricerange'] != 'any':
+                if self.info['pricerange'] != None:
                     system_response = '{} {} {} {} and it is in the {} price range.'.format(
                         suggestion.restaurantname, system_response[:18], suggestion.area, system_response[23:], suggestion.pricerange)
                 else:
@@ -209,9 +192,20 @@ class DialogueSystem:
         print("Next state: ", next_state, " System response: ", system_response)
         return next_state, system_response, self.info
     
-    def suggest(self,info):
-        suggestion = self.suggestions.suggest(info['area'],info['food'],info['pricerange']).iloc[0]  
-        print(suggestion)
+    def suggest(self):
+        rest = self.restaurants
+        area = self.info['area']
+        food = self.info['food']
+        price = self.info['pricerange']
+
+        if (area):
+            rest = rest[rest['area'] == area]
+        if (food):
+            rest = rest[rest['food'] == food]
+        if (price):
+            rest = rest[rest['pricerange'] == price]
+
+        return rest.iloc[0]  
         
     def print_response(self,response):
         print('> System:',response)
