@@ -3,8 +3,6 @@ from baselines import MajorityClassModel, KeywordMatchingModel
 from nn_classifier import NNClassifier
 from logregression import LogisticRegressionModel
 from decisiontree import DecisionTreeModel
-from suggestions import SuggestRestaurants
-from extractinfo import ExtractInformation
 from dialogue_system import DialogueSystem
 import pickle
 
@@ -72,9 +70,5 @@ with open('models/lr_model', 'rb') as f:
 # with open('models/ffnn_model', 'rb') as f:
 #     ffnn_model = pickle.load(f)
 
-extr = ExtractInformation()
-# info = extr.findwords("I want Indiaan food in the centre") # a test to see if it works
-# print(info)
-
-dialogue_system = DialogueSystem(lr_model,insts_train,extr)
+dialogue_system = DialogueSystem(lr_model,insts_train)
 dialogue_system.run_dialogue()

@@ -2,6 +2,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from enum import Enum
 import numpy as np
 from transformers import BertTokenizer
+import Levenshtein
 import pandas as pd
 import os
 
@@ -26,11 +27,10 @@ class DialogState(Enum):
 
 class DialogueSystem:
     
-    def __init__(self,lr_model,insts_train,extract):
+    def __init__(self,lr_model,insts_train):
         # Initialize classifier, vectorizer and extract
         self.classifier = lr_model
         self.vectorizer = CountVectorizer().fit(insts_train)
-        self.extract = extract
         
         # Initialize slots to None
         self.food_type = None
@@ -65,6 +65,15 @@ class DialogueSystem:
         
         # Open the restaurants file and extract details for later use
         self.restaurants = pd.read_csv('data/restaurant_info.csv')
+
+        # Get keywords to be able to extract user input information
+        self.keywords = {}
+        pricerange = self.restaurants.pricerange.unique().tolist()
+        area = self.restaurants.area.unique().tolist()
+        food = self.restaurants.food.unique().tolist()
+        self.keywords["pricerange"] = [str(kw).lower().strip() for kw in pricerange]
+        self.keywords["area"] = [str(kw).lower().strip() for kw in area]
+        self.keywords["food"] = [str(kw).lower().strip() for kw in food]
         
         # Initialize info
         self.info = {}
@@ -101,7 +110,7 @@ class DialogueSystem:
                 next_state = DialogState.ASK_FOOD_TYPE
                 system_response = self.system_uterances['nofoodtype']
             elif user_intent in ['hello', 'inform', 'affirm','confirm','request']:
-                self.info = self.extract.findwords(user_utterance)
+                self.info = self.findwords(user_utterance)
                 print(self.info)
                 if not 'food' in self.info:
                     print("~No food~")
@@ -140,7 +149,7 @@ class DialogueSystem:
         else:
             if 'food' not in self.info:
                 # Check if user mentioned a food preference
-                food_info = self.extract.findwords(user_utterance)
+                food_info = self.findwords(user_utterance)
                 if food_info is not None and 'food' in food_info:
                     self.info['food'] = food_info['food']
                 else:
@@ -153,7 +162,7 @@ class DialogueSystem:
             
             if 'food' in self.info and 'area' not in self.info:
                 # Check if user mentioned an area preference
-                area_info = self.extract.findwords(user_utterance)
+                area_info = self.findwords(user_utterance)
                 if area_info is not None and 'area' in area_info:
                     self.info['area'] = area_info['area']
                 else:
@@ -166,7 +175,7 @@ class DialogueSystem:
             
             if 'food' in self.info and 'area' in self.info and 'pricerange' not in self.info:
                 # Check if user mentioned a price range preference
-                pricerange_info = self.extract.findwords(user_utterance)
+                pricerange_info = self.findwords(user_utterance)
                 if pricerange_info is not None and 'pricerange' in pricerange_info:
                     self.info['pricerange'] = pricerange_info['pricerange']
                 else:
@@ -192,6 +201,20 @@ class DialogueSystem:
         print("Next state: ", next_state, " System response: ", system_response)
         return next_state, system_response, self.info
     
+    def findwords(self, input):
+        words = input.lower().split()
+        # print(words)
+        for word in words:
+            if len(word)>3:
+                for i in self.keywords:
+                    if self.info.get(i) == None:
+                        for j in self.keywords[i]:
+                            if str(word) == str(j):
+                                self.info[i] = j
+                            elif Levenshtein.distance(str(word), str(j)) < 2:
+                                self.info[i] = j
+        return self.info
+
     def suggest(self):
         rest = self.restaurants
         area = self.info['area']
