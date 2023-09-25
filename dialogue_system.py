@@ -103,7 +103,7 @@ class DialogueSystem:
         # Initialize default system_response and next_state
         system_response = 'null'
         next_state = ''
-        
+        new_info = {}
         
         # STATE TRANSITION
         #-- First Reply --
@@ -166,13 +166,11 @@ class DialogueSystem:
             
             new_info, found = self.findwords(user_utterance)
             if not found:
+                print("~~NOT FOUND~~")
                 system_response = self.system_uterances['notunderstand']
                 next_state = DialogState.NOT_UNDERSTAND
             else:
                 if 'food' not in self.info:
-                    # Check if user mentioned a food preference
-                    
-                        
                     if new_info is not None and 'food' in new_info:
                         self.info['food'] = new_info['food']
                     else:
@@ -187,10 +185,12 @@ class DialogueSystem:
                             next_state = DialogState.ASK_FOOD_TYPE
                             system_response = self.system_uterances['nofoodtype']
                             self.tries['food'] = self.tries['food'] -1
+                else:
+                    if 'food' in [new_info,self.info]:
+                        print("FOOD CHANGES")
+                        self.info['food'] = new_info['food']
                 
                 if 'food' in self.info and 'area' not in self.info:
-                    # Check if user mentioned an area preference
-                        
                     if new_info is not None and 'area' in new_info:
                         self.info['area'] = new_info['area']
                     else:
@@ -205,11 +205,13 @@ class DialogueSystem:
                             next_state = DialogState.ASK_AREA
                             system_response = self.system_uterances['noarea']
                             self.tries['area'] = self.tries['area'] -1
+                elif 'food' in self.info and 'area' in self.info:
+                    if 'area' in [new_info,self.info]:
+                        print("AREA CHANGES")
+                        self.info['area'] = new_info['area']
                 
                 if 'food' in self.info and 'area' in self.info and 'pricerange' not in self.info:
                     # Check if user mentioned a price range preference
-                    
-                        
                     if new_info is not None and 'pricerange' in new_info:
                         self.info['pricerange'] = new_info['pricerange']
                     else:
@@ -254,14 +256,11 @@ class DialogueSystem:
         for word in words:
             if len(word)>3:
                 for i in self.keywords:
-                    if self.info.get(i) == None:
-                        for j in self.keywords[i]:
-                            if str(word) == str(j):
-                                self.info[i] = j
-                                found = True
-                            elif Levenshtein.distance(str(word), str(j)) < 2:
-                                self.info[i] = j
-                                found = True
+                    for j in self.keywords[i]:
+                        if word == j or Levenshtein.distance(word, j) < 2:
+                            self.info[i] = j
+                            found = True
+                        
         return self.info, found
 
     def suggest(self):
