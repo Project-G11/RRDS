@@ -14,8 +14,8 @@ Restaurant Recommendation Dialogue System
 | Make sure all feedback has been processed part 1b| Open | Blocked |
 |part 1c--------------------------------------|:--------| :---|
 | Add new properties in csv | Liva | Not started |
-| Add additional requirements question to dialog system | Luna | Not started |
-| Reasoning on additional requirement | Luna | Not started |
+| Add additional requirements question to dialog system | Luna | Done |
+| Reasoning on additional requirement | Luna | Started |
 | Implement configurability | Liva | Not started |
 | Clean up code | All | In progress |
 |Report--------------------------------------------------------|:--------|

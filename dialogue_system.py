@@ -58,7 +58,8 @@ class DialogueSystem:
             'phone': 'The phone number for is ',
             'address': ' is on ',
             'suggestion': 'is a nice place in the side of town',
-            'noplace': 'Unfortunately, there is no such place.'
+            'noplace': 'Unfortunately, there is no such place.',
+            'additionalreqs': 'Do you have additional requirements?'
             }
         self.dialogue_acts = ['ack','affirm','bye','confirm','deny','hello','inform','negate','null','repeat','reqalts','reqmore','request','restart','thankyou']
         
@@ -259,8 +260,20 @@ class DialogueSystem:
                             self.info[i] = j
                             found = True
         return self.info, found
-
+    
     def suggest(self):
+        # TODO: would be nicer if this was included in a state, but will let christos finish so I can more easily integrate it :)
+        self.print_response(self.system_uterances['additionalreqs'])
+        userinput = input(">>> ").lower()
+        intent = self.classify_intent(userinput)
+        suggestion = self.getSuggestion()
+        if intent == 'negate':
+            return suggestion
+        else:
+            # TODO: need to add the reasoning on additional requirement here
+            return suggestion
+
+    def getSuggestion(self):
         rest = self.restaurants
         area = self.info['area']
         food = self.info['food']
