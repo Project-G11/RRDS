@@ -6,10 +6,10 @@ Restaurant Recommendation Dialogue System
 | Task                                | Assigned to |
 |:-------------------------------------|:---------|
 | Evaluation                       | Oliver      |
-| Understand "don't care", "any", "not sure" | Open  Christos   |
-| Understand asking for telephone or address | Open  Christos |
-| Not substract "tries" when user changes preference | Open  Christos |
-| Add type of restaurand in suggestion | Open Christos |
+| Understand "don't care", "any", "not sure" |Christos|
+| Understand asking for telephone or address |Christos|
+| Not substract "tries" when user changes preference |Christos|
+| Add type of restaurand in suggestion |Christos|
 | Make sure all feedback has been processed part 1a| Open|
 | Make sure all feedback has been processed part 1b| Open|
 |part 1c--------------------------------------------------------|:--------|
