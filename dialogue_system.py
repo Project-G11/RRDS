@@ -111,6 +111,25 @@ class DialogueSystem:
         next_state = ''
         new_info = {}
         
+        def generate_suggestion_response():
+            next_state = DialogState.SUGGEST
+            suggestion = self.suggest()
+            try:
+                system_response = self.system_responses['suggestion']
+                if self.info['pricerange'] is not None:
+                    system_response = '{} {} {} {} {} {} and it is in the {} price range.'.format(
+                        suggestion.restaurantname, system_response[:7], suggestion.food, system_response[7:24], suggestion.area, system_response[24:], suggestion.pricerange)
+                    next_state = DialogState.END
+                else:
+                    system_response = '{} {} {} {}'.format(suggestion.restaurantname, system_response[:7], suggestion.food, system_response[7:24], suggestion.area, system_response[24:])
+                    next_state = DialogState.END
+            except:
+                system_response = self.system_responses['noplace']
+                next_state = DialogState.END
+                
+            return system_response, next_state
+
+        
         # STATE TRANSITION
         #-- First Reply --
         if current_state == DialogState.INIT:
@@ -136,20 +155,7 @@ class DialogueSystem:
                             system_response = self.system_responses['nopricerange']
                             self.tries['pricerange'] = self.tries['pricerange'] -1
                         else:
-                            next_state = DialogState.SUGGEST
-                            suggestion = self.suggest()
-                            try:
-                                system_response = self.system_responses['suggestion']
-                                if self.info['pricerange'] != None:
-                                    system_response = '{} {} {} {} {} {} and it is in the {} price range.'.format(
-                                        suggestion.restaurantname, system_response[:7], suggestion.food, system_response[7:24], suggestion.area, system_response[24:], suggestion.pricerange)
-                                    next_state = DialogState.END
-                                else:
-                                    system_response = '{} {} {} {}'.format(suggestion.restaurantname, system_response[:7], suggestion.food, system_response[7:24], suggestion.area, system_response[24:])
-                                    next_state = DialogState.END
-                            except:
-                                system_response = self.system_responses['noplace']
-                                next_state = DialogState.END
+                           system_response, next_state = generate_suggestion_response()
                                 
             elif user_intent in ['bye']:
                 next_state = DialogState.END
@@ -227,22 +233,7 @@ class DialogueSystem:
                             self.tries['pricerange'] = self.tries['pricerange'] -1
                 
                 if 'food' in self.info and 'area' in self.info and 'pricerange' in self.info:
-                    # All slots filled, suggest a restaurant
-                    next_state = DialogState.SUGGEST
-                    suggestion = self.suggest()
-                    
-                    try:
-                        system_response = self.system_responses['suggestion']
-                        if self.info['pricerange'] != None:
-                            system_response = '{} {} {} {} {} {} and it is in the {} price range.'.format(
-                                suggestion.restaurantname, system_response[:7], suggestion.food, system_response[7:24], suggestion.area, system_response[24:], suggestion.pricerange)
-                            next_state = DialogState.END
-                        else:
-                            system_response = '{} {} {} {}'.format(suggestion.restaurantname, system_response[:7], suggestion.food, system_response[7:24], suggestion.area, system_response[24:])
-                            next_state = DialogState.END
-                    except:
-                        system_response = self.system_responses['noplace']
-                        next_state = DialogState.END
+                    system_response, next_state = generate_suggestion_response()
                     
         print("Next state: ", next_state, " System response: ", system_response)
         return next_state, system_response
