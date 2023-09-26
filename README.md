@@ -10,6 +10,7 @@ Restaurant Recommendation Dialogue System
 | Understand asking for telephone or address | Christos | In progress |
 | Not substract "tries" when user changes preference | Christos | In progress |
 | Add type of restaurand in suggestion | Christos | In progress |
+| Simplify diagram | Christos | In progress |
 | Make sure all feedback has been processed part 1a| Justus | Blocked |
 | Make sure all feedback has been processed part 1b| Open | Blocked |
 |part 1c--------------------------------------|:--------| :---|
