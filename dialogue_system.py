@@ -32,15 +32,28 @@ class DialogueSystem:
         # Initialize classifier, vectorizer and extract
         self.classifier = lr_model
         self.vectorizer = CountVectorizer().fit(insts_train)
-        
         # Initialize slots to None
-        self.food_type = None
-        self.area = None
-        self.price_range = None
-        
+        self.init_slots()
         # Initialize system responses
-        self.system_uterances = {
-            'greet': "Hello , welcome to the G11's restaurant system? You can ask for restaurants by area , price range or food type . How may I help you?",
+        self.init_system_responses()
+        # List of dialogue acts
+        self.dialogue_acts = ['ack','affirm','bye','confirm','deny','hello','inform','negate','null','repeat','reqalts','reqmore','request','restart','thankyou']        
+        # Open the restaurants file and extract details for later use
+        self.restaurants = pd.read_csv('data/restaurant_info.csv')
+        # Add properties to restaurant info with random values
+        self.restaurants["quality"] = np.random.choice(["good food", "bad food"], self.restaurants.shape[0])
+        self.restaurants["crowdedness"] = np.random.choice(["busy", "not busy"], self.restaurants.shape[0])
+        self.restaurants["staylength"] = np.random.choice(["long stay", "short stay"], self.restaurants.shape[0])
+        # Get keywords to be able to extract user input information
+        self.init_keywords()
+        # Initialize info
+        self.info = {}
+        # How many times will the system persist
+        self.tries = {'food':2, 'area':2, 'pricerange':2}
+        
+    def init_system_responses(self):
+        self.system_responses = {
+            'greet': "Hello, welcome to the G11's restaurant system? You can ask for restaurants by area, price range, or food type. How may I help you?",
             'noarea':'What part of town do you have in mind?',
             'nofoodtype': 'What kind of food would you like?',
             'nopricerange': 'Would you like something in the cheap , moderate , or expensive price range?',
@@ -58,36 +71,22 @@ class DialogueSystem:
             'notunderstand': "Sorry, I didn't understand your request. Please repeat.", 
             'phone': 'The phone number for is ',
             'address': ' is on ',
-            'suggestion': 'is a nice place in the side of town',
+            'suggestion': 'is a(n)restaurant in theside of town',
             'noplace': 'Unfortunately, there is no such place.',
             'additionalreqs': 'Do you have additional requirements?'
-            }
-        self.dialogue_acts = ['ack','affirm','bye','confirm','deny','hello','inform','negate','null','repeat','reqalts','reqmore','request','restart','thankyou']
+        }
         
-        # Initialize food, place and price
+    def init_slots(self):
+        self.food_type = None
+        self.area = None
+        self.price_range = None
         
-        # Open the restaurants file and extract details for later use
-        self.restaurants = pd.read_csv('data/restaurant_info.csv')
-
-        # Add properties to restaurant info with random values
-        self.restaurants["quality"] = np.random.choice(["good food", "bad food"], self.restaurants.shape[0])
-        self.restaurants["crowdedness"] = np.random.choice(["busy", "not busy"], self.restaurants.shape[0])
-        self.restaurants["staylength"] = np.random.choice(["long stay", "short stay"], self.restaurants.shape[0])
-
-        # Get keywords to be able to extract user input information
-        self.keywords = {}
-        pricerange = self.restaurants.pricerange.unique().tolist()
-        area = self.restaurants.area.unique().tolist()
-        food = self.restaurants.food.unique().tolist()
-        self.keywords["pricerange"] = [str(kw).lower().strip() for kw in pricerange]
-        self.keywords["area"] = [str(kw).lower().strip() for kw in area]
-        self.keywords["food"] = [str(kw).lower().strip() for kw in food]
-        
-        # Initialize info
-        self.info = {}
-        
-        # Initialize food, area and price tries
-        self.tries = {'food':2, 'area':2, 'pricerange':2}
+    def init_keywords(self):
+        self.keywords = {
+            "pricerange": [str(kw).lower().strip() for kw in self.restaurants.pricerange.unique().tolist()],
+            "area": [str(kw).lower().strip() for kw in self.restaurants.area.unique().tolist()],
+            "food": [str(kw).lower().strip() for kw in self.restaurants.food.unique().tolist()],
+        }
         
     def preprocess_sentence(self,sentence, max_words):
         tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
@@ -117,63 +116,57 @@ class DialogueSystem:
         if current_state == DialogState.INIT:
             if user_intent in ['null']:
                 next_state = DialogState.ASK_FOOD_TYPE
-                system_response = self.system_uterances['nofoodtype']
+                system_response = self.system_responses['nofoodtype']
             elif user_intent in ['hello', 'inform', 'affirm','confirm','request']:
                 self.info, found = self.findwords(user_utterance)
-                if not found:
-                    system_response = self.system_uterances['notunderstand']
-                    return next_state, system_response
                     
                 print(self.info)
                 if not 'food' in self.info:
-                    print("~No food~")
                     next_state = DialogState.ASK_FOOD_TYPE
-                    system_response = self.system_uterances['nofoodtype']
+                    system_response = self.system_responses['nofoodtype']
                     self.tries['food'] = self.tries['food'] -1
                 else:
                     if not 'area' in self.info:
-                        print("~No area~")
                         next_state = DialogState.ASK_AREA
-                        system_response = self.system_uterances['noarea']
+                        system_response = self.system_responses['noarea']
                         self.tries['area'] = self.tries['area'] -1
                     else:
                         if not 'pricerange' in self.info:
-                            print("~No pricerange~")
                             next_state = DialogState.ASK_PRICE_RANGE
-                            system_response = self.system_uterances['nopricerange']
+                            system_response = self.system_responses['nopricerange']
                             self.tries['pricerange'] = self.tries['pricerange'] -1
                         else:
                             next_state = DialogState.SUGGEST
                             suggestion = self.suggest()
                             try:
-                                system_response = self.system_uterances['suggestion']
+                                system_response = self.system_responses['suggestion']
                                 if self.info['pricerange'] != None:
-                                    system_response = '{} {} {} {} and it is in the {} price range.'.format(
-                                        suggestion.restaurantname, system_response[:18], suggestion.area, system_response[23:], suggestion.pricerange)
+                                    system_response = '{} {} {} {} {} {} and it is in the {} price range.'.format(
+                                        suggestion.restaurantname, system_response[:7], suggestion.food, system_response[7:24], suggestion.area, system_response[24:], suggestion.pricerange)
                                     next_state = DialogState.END
                                 else:
-                                    system_response = '{} {} {} {}'.format(suggestion.restaurantname, system_response[:18], suggestion.area, system_response[23:])
+                                    system_response = '{} {} {} {}'.format(suggestion.restaurantname, system_response[:7], suggestion.food, system_response[7:24], suggestion.area, system_response[24:])
                                     next_state = DialogState.END
                             except:
-                                system_response = self.system_uterances['noplace']
+                                system_response = self.system_responses['noplace']
                                 next_state = DialogState.END
                                 
             elif user_intent in ['bye']:
                 next_state = DialogState.END
-                system_response = self.system_uterances['goodbye']
+                system_response = self.system_responses['goodbye']
             elif user_intent in ['thankyou']:
                 next_state = DialogState.THANK_YOU
-                system_response = self.system_uterances['thankyou']
+                system_response = self.system_responses['thankyou']
             else:
                 next_state = DialogState.NOT_UNDERSTAND
-                system_response = self.system_uterances['notunderstand']
+                system_response = self.system_responses['notunderstand']
         
         #-- Other Replies --
         else:
             new_info, found = self.findwords(user_utterance)
             if not found:
                 print("~~NOT FOUND~~")
-                system_response = self.system_uterances['notunderstand']
+                system_response = self.system_responses['notunderstand']
                 next_state = DialogState.NOT_UNDERSTAND
             else:
                 if 'food' not in self.info:
@@ -185,11 +178,11 @@ class DialogueSystem:
                         elif current_state == DialogState.ASK_FOOD_TYPE and self.tries['food'] == 1:
                             # Ask if the user wants any food type
                             next_state = DialogState.ASK_FOOD_TYPE
-                            system_response = self.system_uterances['anyfood']
+                            system_response = self.system_responses['anyfood']
                             self.tries['food'] = self.tries['food'] -1
                         else:
                             next_state = DialogState.ASK_FOOD_TYPE
-                            system_response = self.system_uterances['nofoodtype']
+                            system_response = self.system_responses['nofoodtype']
                             self.tries['food'] = self.tries['food'] -1
                 else:
                     if 'food' in [new_info,self.info]:
@@ -205,11 +198,11 @@ class DialogueSystem:
                         elif current_state == DialogState.ASK_AREA and self.tries['area'] == 1:
                             # Ask if the user wants any area
                             next_state = DialogState.ASK_AREA
-                            system_response = self.system_uterances['anyplace']
+                            system_response = self.system_responses['anyplace']
                             self.tries['area'] = self.tries['area'] -1
                         else:
                             next_state = DialogState.ASK_AREA
-                            system_response = self.system_uterances['noarea']
+                            system_response = self.system_responses['noarea']
                             self.tries['area'] = self.tries['area'] -1
                 elif 'food' in self.info and 'area' in self.info:
                     if 'area' in [new_info,self.info]:
@@ -226,11 +219,11 @@ class DialogueSystem:
                         elif current_state == DialogState.ASK_PRICE_RANGE and self.tries['pricerange'] == 1:
                             # Ask if the user wants any price range
                             next_state = DialogState.ASK_PRICE_RANGE
-                            system_response = self.system_uterances['anyprice']
+                            system_response = self.system_responses['anyprice']
                             self.tries['pricerange'] = self.tries['pricerange'] -1
                         else:
                             next_state = DialogState.ASK_PRICE_RANGE
-                            system_response = self.system_uterances['nopricerange']
+                            system_response = self.system_responses['nopricerange']
                             self.tries['pricerange'] = self.tries['pricerange'] -1
                 
                 if 'food' in self.info and 'area' in self.info and 'pricerange' in self.info:
@@ -239,16 +232,16 @@ class DialogueSystem:
                     suggestion = self.suggest()
                     
                     try:
-                        system_response = self.system_uterances['suggestion']
+                        system_response = self.system_responses['suggestion']
                         if self.info['pricerange'] != None:
-                            system_response = '{} {} {} {} and it is in the {} price range.'.format(
-                                suggestion.restaurantname, system_response[:18], suggestion.area, system_response[23:], suggestion.pricerange)
+                            system_response = '{} {} {} {} {} {} and it is in the {} price range.'.format(
+                                suggestion.restaurantname, system_response[:7], suggestion.food, system_response[7:24], suggestion.area, system_response[24:], suggestion.pricerange)
                             next_state = DialogState.END
                         else:
-                            system_response = '{} {} {} {}'.format(suggestion.restaurantname, system_response[:18], suggestion.area, system_response[23:])
+                            system_response = '{} {} {} {}'.format(suggestion.restaurantname, system_response[:7], suggestion.food, system_response[7:24], suggestion.area, system_response[24:])
                             next_state = DialogState.END
                     except:
-                        system_response = self.system_uterances['noplace']
+                        system_response = self.system_responses['noplace']
                         next_state = DialogState.END
                     
         print("Next state: ", next_state, " System response: ", system_response)
@@ -269,7 +262,7 @@ class DialogueSystem:
     
     def suggest(self):
         # TODO: would be nicer if this was included in a state, but will let christos finish so I can more easily integrate it :)
-        self.print_response(self.system_uterances['additionalreqs'])
+        self.print_response(self.system_responses['additionalreqs'])
         userinput = input(">>> ").lower()
         intent = self.classify_intent(userinput)
         suggestion = self.getSuggestion()
@@ -303,7 +296,7 @@ class DialogueSystem:
         os.system('cls')
         # Default state
         current_state = DialogState.INIT
-        self.print_response(self.system_uterances['greet'])
+        self.print_response(self.system_responses['greet'])
         # Iterative dialogue until user ends the conversation       
         while current_state not in [DialogState.END, DialogState.GOODBYE]:
             user_utterance = input(">>> ").lower()
