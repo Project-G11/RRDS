@@ -21,7 +21,7 @@ Restaurant Recommendation Dialogue System
 |Report--------------------------------------------------------|:--------|
 | Introduction | Open|
 | Data | Open |
-| Machine Learning | Open|
+| Machine Learning | Oliver|
 | Dialog manager | Open |
 | Reasoning | Open |
 | Configurability | Open |
