@@ -1,0 +1,5 @@
+Dialogue System:
+    1. Understand "don't care", "any", "not sure"
+    2. Understand asking for telephone or address
+    3. Not substract "tries" when user changes preference.
+    4. Add type of restaurand in suggestion
