@@ -3,27 +3,27 @@ Restaurant Recommendation Dialogue System
 
 # Tasks
 
-| Task                                | Assigned to |
-|:-------------------------------------|:---------|
-| Evaluation                       | Oliver      |
-| Understand "don't care", "any", "not sure" | Open  Christos   |
-| Understand asking for telephone or address | Open  Christos |
-| Not substract "tries" when user changes preference | Open  Christos |
-| Add type of restaurand in suggestion | Open Christos |
-| Make sure all feedback has been processed part 1a| Open|
-| Make sure all feedback has been processed part 1b| Open|
-|part 1c--------------------------------------------------------|:--------|
-| Add new properties in csv | Liva|
-| Add additional requirements question to dialog system | Luna|
-| Reasoning on additional requirement | Luna |
-| Implement configurability | Liva |
-| Clean up code | All|
+| Task                                | Assigned to | progress |
+|:-------------------------------------|:---------|:---|
+| Evaluation                       | Oliver      | In progress |
+| Understand "don't care", "any", "not sure" | Open  Christos   | In progress |
+| Understand asking for telephone or address | Open  Christos | In progress |
+| Not substract "tries" when user changes preference | Open  Christos | In progress |
+| Add type of restaurand in suggestion | Open Christos | In progress |
+| Make sure all feedback has been processed part 1a| Open| Blocked |
+| Make sure all feedback has been processed part 1b| Open| Blocked |
+|part 1c--------------------------------------|:--------| :---|
+| Add new properties in csv | Liva| Not started |
+| Add additional requirements question to dialog system | Luna| Not started |
+| Reasoning on additional requirement | Luna | Not started |
+| Implement configurability | Liva | Not started |
+| Clean up code | All| In Progress!|
 |Report--------------------------------------------------------|:--------|
-| Introduction | Open|
-| Data | Open |
-| Machine Learning | Oliver|
-| Dialog manager | Open |
-| Reasoning | Luna |
-| Configurability | Liva |
-| Conclusion | Open |
-| Abstract | Open |
+| Introduction | Open| In progress |
+| Data | Open | In progress |
+| Machine Learning | Oliver| Not Started |
+| Dialog manager | Open | Not started |
+| Reasoning | Luna | Not started |
+| Configurability | Liva | Not started |
+| Conclusion | Open | Not started |
+| Abstract | Open | Not started |
