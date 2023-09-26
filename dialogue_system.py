@@ -5,6 +5,7 @@ from transformers import BertTokenizer
 import Levenshtein
 import pandas as pd
 import os
+import random
 
 
 
@@ -67,6 +68,11 @@ class DialogueSystem:
         
         # Open the restaurants file and extract details for later use
         self.restaurants = pd.read_csv('data/restaurant_info.csv')
+
+        # Add properties to restaurant info with random values
+        self.restaurants["quality"] = np.random.choice(["good food", "bad food"], self.restaurants.shape[0])
+        self.restaurants["crowdedness"] = np.random.choice(["busy", "not busy"], self.restaurants.shape[0])
+        self.restaurants["staylength"] = np.random.choice(["long stay", "short stay"], self.restaurants.shape[0])
 
         # Get keywords to be able to extract user input information
         self.keywords = {}
