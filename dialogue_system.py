@@ -163,7 +163,6 @@ class DialogueSystem:
         
         #-- Other Replies --
         else:
-            
             new_info, found = self.findwords(user_utterance)
             if not found:
                 print("~~NOT FOUND~~")
@@ -244,7 +243,6 @@ class DialogueSystem:
                     except:
                         system_response = self.system_uterances['noplace']
                         next_state = DialogState.END
-
                     
         print("Next state: ", next_state, " System response: ", system_response)
         return next_state, system_response
@@ -260,7 +258,6 @@ class DialogueSystem:
                         if word == j or Levenshtein.distance(word, j) < 2:
                             self.info[i] = j
                             found = True
-                        
         return self.info, found
 
     def suggest(self):
@@ -297,7 +294,4 @@ class DialogueSystem:
             
             if current_state == DialogState.END:
                 break
-            
-            
-            
             
