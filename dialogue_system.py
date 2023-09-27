@@ -54,6 +54,10 @@ class DialogueSystem:
         self.info = {}
         # How many times will the system persist
         self.tries = {'food':2, 'area':2, 'pricerange':2}
+        # Configurability using Levenshtein distance
+        self.levenshtein_dist = True
+        # Configurability using all caps
+        self.all_caps = False
         
     def init_system_responses(self):
         self.system_responses = {
@@ -250,9 +254,14 @@ class DialogueSystem:
             if len(word)>3:
                 for i in self.keywords:
                     for j in self.keywords[i]:
-                        if word == j or Levenshtein.distance(word, j) < 2:
-                            self.info[i] = j
-                            found = True
+                        if self.levenshtein_dist:
+                            if word == j or Levenshtein.distance(word, j) < 2:
+                                self.info[i] = j
+                                found = True
+                        else:
+                            if word == j:
+                                self.info[i] = j
+                                found = True
         return self.info, found
     
     def suggest(self):
@@ -284,7 +293,10 @@ class DialogueSystem:
             return rest.iloc[0]  
         
     def print_response(self,response):
-        print('> System:',response)
+        if self.all_caps:
+            print('> System:',response.upper())
+        else:
+            print('> System:',response)
     
     def run_dialogue(self):
         # Clear console
