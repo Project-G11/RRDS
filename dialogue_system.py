@@ -6,6 +6,7 @@ import Levenshtein
 import pandas as pd
 import os
 import random
+import csv
 
 
 
@@ -40,10 +41,13 @@ class DialogueSystem:
         self.dialogue_acts = ['ack','affirm','bye','confirm','deny','hello','inform','negate','null','repeat','reqalts','reqmore','request','restart','thankyou']        
         # Open the restaurants file and extract details for later use
         self.restaurants = pd.read_csv('data/restaurant_info.csv')
-        # Add properties to restaurant info with random values
+        # Add properties to restaurant info with random values, only used once to create restaurant_info_new.csv
+        '''
         self.restaurants["quality"] = np.random.choice(["good food", "bad food"], self.restaurants.shape[0])
         self.restaurants["crowdedness"] = np.random.choice(["busy", "not busy"], self.restaurants.shape[0])
         self.restaurants["staylength"] = np.random.choice(["long stay", "short stay"], self.restaurants.shape[0])
+        self.restaurants.to_csv('data/restaurant_info_new.csv', quoting = csv.QUOTE_ALL, index = False)
+        '''
         # Get keywords to be able to extract user input information
         self.init_keywords()
         # Initialize info
