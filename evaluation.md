@@ -150,22 +150,22 @@ satisfactory for the performance of restaurant recommendation duties.
 
 To identify which specific dialog acts (categories) each model had the most trouble with individually, we can look at the F1-scores for each category and select those with the lowest F1-scores. Additionally, we can also consider classes with lower precision and recall values.
 
-### Decision Tree Model:
+### 2.1 Decision Tree Model:
 
     The "repeat" class has an F1-score of 0.80, which is relatively lower than other classes.
     The "reqmore" class has an F1-score of 0.00, indicating poor performance for this class.
 
-### Logistic Regression Model:
+### 2.2 Logistic Regression Model:
 
     The "ack" class has an F1-score of 0.00, indicating that the model struggled to predict this class.
     The "reqmore" class has an F1-score of 0.00, indicating a lack of understanding.
 
-### Feedforward Neural Network (FNN) Model:
+### 2.3 Feedforward Neural Network (FNN) Model:
 
     Similar to the Decision Tree and Logistic Regression models, the "ack" class has an F1-score of 0.00, indicating difficulties in predicting this class.
     The "repeat" class has an F1-score of 0.80, which is relatively lower than other classes.
 
-### Considering the models collectively:
+### 2.4 Considering the models collectively:
 
     Altogether, the "ack" and "reqmore" classes are consistently challenging for all models. These classes had low F1-scores in all three models, meaning they are difficult for the models to classify universally.
 
