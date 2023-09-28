@@ -41,7 +41,7 @@ class DialogueSystem:
         # List of dialogue acts
         self.dialogue_acts = ['ack','affirm','bye','confirm','deny','hello','inform','negate','null','repeat','reqalts','reqmore','request','restart','thankyou']        
         # Open the restaurants file and extract details for later use
-        self.restaurants = pd.read_csv('data/restaurant_info.csv')
+        self.restaurants = pd.read_csv('data/restaurant_info_new.csv')
         # Add properties to restaurant info with random values, only used once to create restaurant_info_new.csv
         '''
         self.restaurants["quality"] = np.random.choice(["good food", "bad food"], self.restaurants.shape[0])
@@ -86,7 +86,8 @@ class DialogueSystem:
             'address': ' is on ',
             'suggestion': 'is a(n)restaurant in theside of town',
             'noplace': 'Unfortunately, there is no such place.',
-            'additionalreqs': 'Do you have additional requirements?'
+            'additionalreqs': 'Do you have additional requirements?',
+            'reqnotfound': 'Unfortunately, I cannot find a restaurant that matches your additional requirements. However '
         }
         
     def init_slots(self):
@@ -150,7 +151,7 @@ class DialogueSystem:
                 next_state = DialogState.ASK_FOOD_TYPE
                 system_response = self.system_responses['nofoodtype']
             elif user_intent in ['hello', 'inform', 'affirm','confirm','request']:
-                self.info, found = self.findwords(self.info, user_utterance)
+                self.info, found = self.findwords(self.info, user_utterance, self.keywords)
                     
                 print(self.info)
                 if not 'food' in self.info:
@@ -182,7 +183,7 @@ class DialogueSystem:
         
         #-- Other Replies --
         else:
-            new_info, found = self.findwords(new_info, user_utterance)
+            new_info, found = self.findwords(new_info, user_utterance, self.keywords)
             print("New info:", new_info.keys() , "Info:", self.info.keys())
             print("COMMON:", set(new_info.keys()) & set(self.info.keys()))
             print("Info:", self.info)
@@ -260,14 +261,14 @@ class DialogueSystem:
         print("Next state: ", next_state, " System response: ", system_response)
         return next_state, system_response
     
-    def findwords(self,info, words):
+    def findwords(self, info, words, keywords):
         words = words.lower().split()
         found = False
         # print(words)
         for word in words:
             if len(word)>3:
-                for i in self.keywords:
-                    for j in self.keywords[i]:
+                for i in keywords:
+                    for j in keywords[i]:
                         if self.levenshtein_dist:
                             if self.levenshtein_match:
                                 if word == j:
@@ -291,16 +292,27 @@ class DialogueSystem:
         return info, found
     
     def suggest(self):
-        # TODO: would be nicer if this was included in a state, but will let christos finish so I can more easily integrate it :)
+        # ask for additional requirements
         self.print_response(self.system_responses['additionalreqs'])
         userinput = input(">>> ").lower()
         intent = self.classify_intent(userinput)
-        suggestion = self.getSuggestion()
+        suggestions = self.getSuggestion()
+        # if user doesn't give additional requirements, get the first restaurant from the list
         if intent == 'negate':
-            return suggestion
+            return suggestions.iloc[0]
         else:
-            # TODO: need to add the reasoning on additional requirement here
-            return suggestion
+            # extract user input requirement
+            req_options = {"requirements": ["romantic", "touristic", "children", "assigned seats"]}
+            info, found = self.findwords(self.info, userinput, req_options)
+            # if requirement is extracted, filter existing suggestions based on requirement
+            if found:
+                newsug = self.reasonOnReqs(info["requirements"], suggestions)
+                if not newsug.empty:
+                    return newsug.iloc[0]
+
+            # if doesn't understand requirement or no restaurant exist with given requirement
+            self.print_response(self.system_responses['reqnotfound'])
+            return suggestions.iloc[0]
 
     def getSuggestion(self):
         rest = self.restaurants
@@ -316,7 +328,17 @@ class DialogueSystem:
             rest = rest[rest['pricerange'] == price]
             
         if not rest.empty:
-            return rest.iloc[0]  
+            return rest  
+        
+    def reasonOnReqs(self, req, sugs):
+        if req == "touristic":
+            return sugs[(sugs["pricerange"] == "cheap") & (sugs["quality"] == "good food") & sugs["food"] != "romanian"]
+        elif req =="romantic":
+            return sugs[(sugs["staylength"] == "long stay") & (sugs["crowdedness"] == "not busy")]
+        elif req =="children":
+            return sugs[sugs["staylength"] == "short stay"]
+        elif req =="assigned seats":
+            return sugs[sugs["crowdedness"] == "busy"]
         
     def print_response(self,response):
         if self.delay:
