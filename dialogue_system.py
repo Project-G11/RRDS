@@ -58,6 +58,8 @@ class DialogueSystem:
         self.levenshtein_dist = True
         # Configurability using all caps
         self.all_caps = False
+        # Configurability checking Levenshtein match correctness
+        self.levenshtein_match = False
         
     def init_system_responses(self):
         self.system_responses = {
@@ -246,8 +248,8 @@ class DialogueSystem:
         print("Next state: ", next_state, " System response: ", system_response)
         return next_state, system_response
     
-    def findwords(self, input):
-        words = input.lower().split()
+    def findwords(self, words):
+        words = words.lower().split()
         found = False
         # print(words)
         for word in words:
@@ -255,9 +257,21 @@ class DialogueSystem:
                 for i in self.keywords:
                     for j in self.keywords[i]:
                         if self.levenshtein_dist:
-                            if word == j or Levenshtein.distance(word, j) < 2:
-                                self.info[i] = j
-                                found = True
+                            if self.levenshtein_match:
+                                if word == j:
+                                    self.info[i] = j
+                                    found = True
+                                if Levenshtein.distance(word, j) < 2:
+                                    self.print_response("Did you mean " + j + " by " + word + "?")
+                                    userinput = input(">>> ").lower()
+                                    user_intent = self.classify_intent(userinput)
+                                    if user_intent in ['affirm']:
+                                        self.info[i] = j
+                                        found = True
+                            else:
+                                if word == j or Levenshtein.distance(word, j) < 2:
+                                    self.info[i] = j
+                                    found = True
                         else:
                             if word == j:
                                 self.info[i] = j
