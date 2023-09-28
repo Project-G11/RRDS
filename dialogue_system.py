@@ -192,9 +192,7 @@ class DialogueSystem:
                 next_state = DialogState.NOT_UNDERSTAND
             else:
                 if 'food' not in self.info:
-                    print("Food wasn't in self.info")
                     if new_info is not None and 'food' in new_info:
-                        print("Food was in new info")
                         self.info['food'] = new_info['food']
                     else:
                         if current_state == DialogState.ASK_FOOD_TYPE and self.tries['food'] == 0:
@@ -211,7 +209,6 @@ class DialogueSystem:
                             if not (set(new_info.keys()) & set(self.info.keys())):
                                 self.tries['food'] = self.tries['food'] -1
                 else:
-                    print("Entered else: Food in self.info")
                     if 'food' in new_info:
                         print("FOOD CHANGES")
                         self.info['food'] = new_info['food']
@@ -249,11 +246,13 @@ class DialogueSystem:
                             # Ask if the user wants any price range
                             next_state = DialogState.ASK_PRICE_RANGE
                             system_response = self.system_responses['anyprice']
-                            self.tries['pricerange'] = self.tries['pricerange'] -1
+                            if not (set(new_info.keys()) & set(self.info.keys())):
+                                self.tries['pricerange'] = self.tries['pricerange'] -1
                         else:
                             next_state = DialogState.ASK_PRICE_RANGE
                             system_response = self.system_responses['nopricerange']
-                            self.tries['pricerange'] = self.tries['pricerange'] -1
+                            if not (set(new_info.keys()) & set(self.info.keys())):
+                                self.tries['pricerange'] = self.tries['pricerange'] -1
                 
                 if 'food' in self.info and 'area' in self.info and 'pricerange' in self.info:
                     system_response, next_state = generate_suggestion_response()
