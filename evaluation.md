@@ -172,8 +172,33 @@ The "repeat" class has an F1-score of 0.80, which is relatively lower than other
 
 Altogether, the "ack" and "reqmore" classes are consistently challenging for all models. These classes had low F1-scores in all three models, meaning they are difficult for the models to classify universally.
 
+### 2.5 Explanation of the results
+
+Of the possible factors that can be considered to have caused the observed classes to have such low results 
+here are a few of the more likely. 
+
+Data imbalance is the most likely factor that contributes toward the low prediction results. The classes that the models
+were found to be performing poorly all universally feature a lack of samples for the models to train on. 
+
+It is additionally possible that in addition to the low amount samples, the low-performing classes' samples also 
+fail to accurately capture the features of those classes.
+
+Finally, it is possible that due to the wide amount of human responses that can be used to acknowledge or indicate
+a need for additional data the model is simply not able to generalize enough to satisfy the test. 
+
 
 ## 3. Difficult Cases
+
+Following the instructions suggested in the evaluation task, two types of difficult cases were presented to the three 
+models. Firstly, a gramatically incorrect statement, and secondly, a negation statement.
+
+For the non-fluent statements none of the models was able to correctly discern what the user was trying to imply.
+The models, being unequipped with either such a wide pool of mistyped class instances or a routine to discern 
+typos, fell back to simply informing the user of the system to retype their request.
+
+And as for the negation statement, its results are a bit more varied. In all the three stages of restaurant specification, the decision tree and logistic regression tree failed to determine that the user intended the food to NOT be expensive, for example, or that the restaurant ought NOT to be in south of town - which is sensible as the underlying algorithms was not equipped to deal with this sort of response. 
+
+Only in the case of the neural network was the system capable of determining when a user wants a restaurant to NOT be cheap. For the other two factors, category and location, the neural network performed as "poorly" as the others. 
 
 ## 4. System Comparison
 
