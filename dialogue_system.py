@@ -150,7 +150,7 @@ class DialogueSystem:
                 next_state = DialogState.ASK_FOOD_TYPE
                 system_response = self.system_responses['nofoodtype']
             elif user_intent in ['hello', 'inform', 'affirm','confirm','request']:
-                self.info, found = self.findwords(user_utterance)
+                self.info, found = self.findwords(self.info, user_utterance)
                     
                 print(self.info)
                 if not 'food' in self.info:
@@ -182,14 +182,19 @@ class DialogueSystem:
         
         #-- Other Replies --
         else:
-            new_info, found = self.findwords(user_utterance)
+            new_info, found = self.findwords(new_info, user_utterance)
+            print("New info:", new_info.keys() , "Info:", self.info.keys())
+            print("COMMON:", set(new_info.keys()) & set(self.info.keys()))
+            print("Info:", self.info)
             if not found:
                 print("~~NOT FOUND~~")
                 system_response = self.system_responses['notunderstand']
                 next_state = DialogState.NOT_UNDERSTAND
             else:
                 if 'food' not in self.info:
+                    print("Food wasn't in self.info")
                     if new_info is not None and 'food' in new_info:
+                        print("Food was in new info")
                         self.info['food'] = new_info['food']
                     else:
                         if current_state == DialogState.ASK_FOOD_TYPE and self.tries['food'] == 0:
@@ -198,13 +203,16 @@ class DialogueSystem:
                             # Ask if the user wants any food type
                             next_state = DialogState.ASK_FOOD_TYPE
                             system_response = self.system_responses['anyfood']
-                            self.tries['food'] = self.tries['food'] -1
+                            if not (set(new_info.keys()) & set(self.info.keys())):
+                                self.tries['food'] = self.tries['food'] -1
                         else:
                             next_state = DialogState.ASK_FOOD_TYPE
                             system_response = self.system_responses['nofoodtype']
-                            self.tries['food'] = self.tries['food'] -1
+                            if not (set(new_info.keys()) & set(self.info.keys())):
+                                self.tries['food'] = self.tries['food'] -1
                 else:
-                    if 'food' in [new_info,self.info]:
+                    print("Entered else: Food in self.info")
+                    if 'food' in new_info:
                         print("FOOD CHANGES")
                         self.info['food'] = new_info['food']
                 
@@ -218,13 +226,15 @@ class DialogueSystem:
                             # Ask if the user wants any area
                             next_state = DialogState.ASK_AREA
                             system_response = self.system_responses['anyplace']
-                            self.tries['area'] = self.tries['area'] -1
+                            if not (set(new_info.keys()) & set(self.info.keys())):
+                                self.tries['area'] = self.tries['area'] -1
                         else:
                             next_state = DialogState.ASK_AREA
                             system_response = self.system_responses['noarea']
-                            self.tries['area'] = self.tries['area'] -1
+                            if not (set(new_info.keys()) & set(self.info.keys())):
+                                self.tries['area'] = self.tries['area'] -1
                 elif 'food' in self.info and 'area' in self.info:
-                    if 'area' in [new_info,self.info]:
+                    if 'area' in new_info:
                         print("AREA CHANGES")
                         self.info['area'] = new_info['area']
                 
@@ -251,7 +261,7 @@ class DialogueSystem:
         print("Next state: ", next_state, " System response: ", system_response)
         return next_state, system_response
     
-    def findwords(self, words):
+    def findwords(self,info, words):
         words = words.lower().split()
         found = False
         # print(words)
@@ -262,24 +272,24 @@ class DialogueSystem:
                         if self.levenshtein_dist:
                             if self.levenshtein_match:
                                 if word == j:
-                                    self.info[i] = j
+                                    info[i] = j
                                     found = True
                                 if Levenshtein.distance(word, j) < 2:
                                     self.print_response("Did you mean " + j + " by " + word + "?")
                                     userinput = input(">>> ").lower()
                                     user_intent = self.classify_intent(userinput)
                                     if user_intent in ['affirm']:
-                                        self.info[i] = j
+                                        info[i] = j
                                         found = True
                             else:
                                 if word == j or Levenshtein.distance(word, j) < 2:
-                                    self.info[i] = j
+                                    info[i] = j
                                     found = True
                         else:
                             if word == j:
-                                self.info[i] = j
+                                info[i] = j
                                 found = True
-        return self.info, found
+        return info, found
     
     def suggest(self):
         # TODO: would be nicer if this was included in a state, but will let christos finish so I can more easily integrate it :)
