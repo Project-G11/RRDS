@@ -4,7 +4,29 @@
 
 ### 1.1 An Explanation of the Quantitative Evaluation Metrics
 
+In order to examine the three different classification models
+a common set of metrics had to be decided on. The most common
+metric used to judge all models' performance is the overall
+accuracy. It is the first value presented for all systems,
+including the baseline models. 
+
+Additionally, a classification report was carried out on all 
+the models individually, comparing their ability to 
+correctly classify the test cases into their corresponding 
+categories. Depending on the systems' performance an
+additional four metrics were derived: Precision, measuring
+the accuracy of positive predictions; Recall, measuring
+a model's ability to identify all relevant instances of a
+class; Support, which maintains the number of instances of 
+a class in a data set. Weighted accuracy was also derived. 
+
+Overall, all these metrics combined give a good measure of 
+the systems' performance in their classification tasks. 
+
 ### 1.2 Baseline Systems
+
+Majority class model accuracy is 0.40041819132253004
+Keyword matching model accuracy is 0.8112911657083115
 
 ### 1.3 Decision Tree
 
@@ -72,6 +94,8 @@ Feedforward Neural Network classifier accuracy: 0.986147403717041
 
 Feedforward Neural Network classifier loss: 0.05195702612400055
 
+Classification report:
+
 |           | Precision | Recall | F1-Score | Support |
 |-----------|-----------|--------|----------|---------|
 | ack       | 0.00      | 0.00   | 0.00     | 5       |
@@ -90,7 +114,7 @@ Feedforward Neural Network classifier loss: 0.05195702612400055
 | restart   | 0.00      | 0.00   | 0.00     | 2       |
 | thankyou  | 1.00      | 0.99   | 1.00     | 474     |
 |-----------|-----------|--------|----------|---------|
-| Micro Avg | 0.99      | 0.98   | 0.99     | 3826    |
+| Accuracy  | 0.99      | 0.98   | 0.99     | 3826    |
 | Macro Avg | 0.78      | 0.72   | 0.74     | 3826    |
 | Weighted Avg | 0.99   | 0.98   | 0.98     | 3826    |
 
