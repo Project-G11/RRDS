@@ -26,6 +26,7 @@ the systems' performance in their classification tasks.
 ### 1.2 Baseline Systems
 
 Majority class model accuracy is 0.40041819132253004
+
 Keyword matching model accuracy is 0.8112911657083115
 
 ### 1.3 Decision Tree
@@ -146,6 +147,28 @@ satisfactory for the performance of restaurant recommendation duties.
 
 
 ## 2. Error Analysis
+
+To identify which specific dialog acts (categories) each model had the most trouble with individually, we can look at the F1-scores for each category and select those with the lowest F1-scores. Additionally, we can also consider classes with lower precision and recall values.
+
+### Decision Tree Model:
+
+    The "repeat" class has an F1-score of 0.80, which is relatively lower than other classes.
+    The "reqmore" class has an F1-score of 0.00, indicating poor performance for this class.
+
+### Logistic Regression Model:
+
+    The "ack" class has an F1-score of 0.00, indicating that the model struggled to predict this class.
+    The "reqmore" class has an F1-score of 0.00, indicating a lack of understanding.
+
+### Feedforward Neural Network (FNN) Model:
+
+    Similar to the Decision Tree and Logistic Regression models, the "ack" class has an F1-score of 0.00, indicating difficulties in predicting this class.
+    The "repeat" class has an F1-score of 0.80, which is relatively lower than other classes.
+
+### Considering the models collectively:
+
+    Altogether, the "ack" and "reqmore" classes are consistently challenging for all models. These classes had low F1-scores in all three models, meaning they are difficult for the models to classify universally.
+
 
 ## 3. Difficult Cases
 
