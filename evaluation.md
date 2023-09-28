@@ -8,12 +8,64 @@
 
 ### 1.3 Decision Tree
 
+Decision Tree classifier accuracy: 0.97909
+
+Classification Report:
+               precision    recall  f1-score   support
+
+         ack       0.75      0.60      0.67         5
+      affirm       0.99      0.99      0.99       180
+         bye       0.97      1.00      0.99        35
+     confirm       0.78      0.82      0.80        22
+        deny       0.86      1.00      0.92         6
+       hello       1.00      1.00      1.00        14
+      inform       0.99      0.97      0.98      1532
+      negate       1.00      1.00      1.00        69
+        null       0.86      0.98      0.92       232
+      repeat       1.00      0.67      0.80         3
+     reqalts       0.97      0.97      0.97       279
+     reqmore       1.00      1.00      1.00         1
+     request       0.99      1.00      0.99       972
+     restart       1.00      0.50      0.67         2
+    thankyou       1.00      1.00      1.00       474
+
+    accuracy                           0.98      3826
+   macro avg       0.94      0.90      0.91      3826
+weighted avg       0.98      0.98      0.98      3826
+
 ### 1.4 Logistic Regression
 
-Feedforward Neural Network classifier accuracy: 0.986147403717041
-Feedforward Neural Network classifier loss: 0.05195702612400055
+Accuracy: 0.98
+Classification Report:
+               precision    recall  f1-score   support
+
+         ack       0.00      0.00      0.00         5
+      affirm       0.99      0.98      0.99       180
+         bye       0.94      0.91      0.93        35
+     confirm       0.81      0.77      0.79        22
+        deny       1.00      0.50      0.67         6
+       hello       1.00      0.93      0.96        14
+      inform       0.98      0.99      0.98      1532
+      negate       1.00      0.99      0.99        69
+        null       0.97      0.93      0.95       232
+      repeat       1.00      0.67      0.80         3
+     reqalts       0.95      0.98      0.97       279
+     reqmore       0.00      0.00      0.00         1
+     request       1.00      0.99      1.00       972
+     restart       1.00      1.00      1.00         2
+    thankyou       0.99      1.00      0.99       474
+
+    accuracy                           0.98      3826
+   macro avg       0.84      0.78      0.80      3826
+weighted avg       0.98      0.98      0.98      3826
+
+
 
 ### 1.5 Feed-Forward Neural Network 
+
+Feedforward Neural Network classifier accuracy: 0.986147403717041
+
+Feedforward Neural Network classifier loss: 0.05195702612400055
 
 ## 2. Error Analysis
 
