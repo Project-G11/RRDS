@@ -118,6 +118,33 @@ Classification report:
 | Macro Avg | 0.78      | 0.72   | 0.74     | 3826    |
 | Weighted Avg | 0.99   | 0.98   | 0.98     | 3826    |
 
+### 1.6 Overall Comparison
+
+Overall: 
+
+| Metric               | Decision Tree | Logistic Regression | Feedforward Neural Network |
+|----------------------|---------------|----------------------|-----------------------------|
+| Accuracy             | 0.98          | 0.98                 | 0.986                       |
+| Macro Avg Precision  | 0.94          | 0.84                 | 0.78                        |
+| Macro Avg Recall     | 0.90          | 0.78                 | 0.72                        |
+| Macro Avg F1-Score   | 0.91          | 0.80                 | 0.74                        |
+| Weighted Avg Precision | 0.98       | 0.98                 | 0.99                        |
+| Weighted Avg Recall  | 0.98          | 0.98                 | 0.98                        |
+| Weighted Avg F1-Score| 0.98          | 0.98                 | 0.98                        |
+
+
+As can be seen from the above table the three models all have desirable levels of accuracy, around 98% for all cases. 
+
+The Decision Tree model has high precision, recall, and F1-scores for most classes, with strong macro and weighted average metrics.
+
+The Logistic Regression model also exhibits high precision and recall, but some classes have lower performance metrics.
+
+The Feedforward Neural Network (FNN) performs well, with high accuracy, but it has lower precision, recall, and F1-scores for some classes. 
+
+It can be concluded from these findings that all the models have good measurable classification rates and are quite 
+satisfactory for the performance of restaurant recommendation duties. 
+
+
 ## 2. Error Analysis
 
 ## 3. Difficult Cases
