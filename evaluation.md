@@ -11,6 +11,7 @@
 Decision Tree classifier accuracy: 0.97909
 
 Classification Report:
+
 |           | Precision | Recall | F1-Score | Support |
 |-----------|-----------|--------|----------|---------|
 | ack       | 0.75      | 0.60   | 0.67     | 5       |
@@ -37,6 +38,7 @@ Classification Report:
 ### 1.4 Logistic Regression
 
 Accuracy: 0.98
+
 Classification Report:
 
 |           | Precision | Recall | F1-Score | Support |
@@ -69,6 +71,28 @@ Classification Report:
 Feedforward Neural Network classifier accuracy: 0.986147403717041
 
 Feedforward Neural Network classifier loss: 0.05195702612400055
+
+|           | Precision | Recall | F1-Score | Support |
+|-----------|-----------|--------|----------|---------|
+| ack       | 0.00      | 0.00   | 0.00     | 5       |
+| affirm    | 0.99      | 0.98   | 0.99     | 180     |
+| bye       | 0.94      | 0.97   | 0.96     | 35      |
+| confirm   | 0.87      | 0.91   | 0.89     | 22      |
+| deny      | 1.00      | 0.50   | 0.67     | 6       |
+| hello     | 1.00      | 0.86   | 0.92     | 14      |
+| inform    | 0.99      | 0.99   | 0.99     | 1532    |
+| negate    | 1.00      | 1.00   | 1.00     | 69      |
+| null      | 0.97      | 0.94   | 0.95     | 232     |
+| repeat    | 1.00      | 0.67   | 0.80     | 3       |
+| reqalts   | 0.97      | 0.96   | 0.97     | 279     |
+| reqmore   | 0.00      | 0.00   | 0.00     | 1       |
+| request   | 1.00      | 1.00   | 1.00     | 972     |
+| restart   | 0.00      | 0.00   | 0.00     | 2       |
+| thankyou  | 1.00      | 0.99   | 1.00     | 474     |
+|-----------|-----------|--------|----------|---------|
+| Micro Avg | 0.99      | 0.98   | 0.99     | 3826    |
+| Macro Avg | 0.78      | 0.72   | 0.74     | 3826    |
+| Weighted Avg | 0.99   | 0.98   | 0.98     | 3826    |
 
 ## 2. Error Analysis
 
