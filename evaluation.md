@@ -152,22 +152,25 @@ To identify which specific dialog acts (categories) each model had the most trou
 
 ### 2.1 Decision Tree Model:
 
-    The "repeat" class has an F1-score of 0.80, which is relatively lower than other classes.
-    The "reqmore" class has an F1-score of 0.00, indicating poor performance for this class.
+The "repeat" class has an F1-score of 0.80, which is relatively lower than other classes.
+
+The "reqmore" class has an F1-score of 0.00, indicating poor performance for this class.
 
 ### 2.2 Logistic Regression Model:
 
-    The "ack" class has an F1-score of 0.00, indicating that the model struggled to predict this class.
-    The "reqmore" class has an F1-score of 0.00, indicating a lack of understanding.
+The "ack" class has an F1-score of 0.00, indicating that the model struggled to predict this class.
+
+The "reqmore" class has an F1-score of 0.00, indicating a lack of understanding.
 
 ### 2.3 Feedforward Neural Network (FNN) Model:
 
-    Similar to the Decision Tree and Logistic Regression models, the "ack" class has an F1-score of 0.00, indicating difficulties in predicting this class.
-    The "repeat" class has an F1-score of 0.80, which is relatively lower than other classes.
+Similar to the Decision Tree and Logistic Regression models, the "ack" class has an F1-score of 0.00, indicating difficulties in predicting this class.
+
+The "repeat" class has an F1-score of 0.80, which is relatively lower than other classes.
 
 ### 2.4 Considering the models collectively:
 
-    Altogether, the "ack" and "reqmore" classes are consistently challenging for all models. These classes had low F1-scores in all three models, meaning they are difficult for the models to classify universally.
+Altogether, the "ack" and "reqmore" classes are consistently challenging for all models. These classes had low F1-scores in all three models, meaning they are difficult for the models to classify universally.
 
 
 ## 3. Difficult Cases
