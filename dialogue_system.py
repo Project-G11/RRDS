@@ -7,6 +7,7 @@ import pandas as pd
 import os
 import random
 import csv
+import time
 
 
 
@@ -60,6 +61,8 @@ class DialogueSystem:
         self.all_caps = False
         # Configurability checking Levenshtein match correctness
         self.levenshtein_match = False
+        # Configurability delay in system response
+        self.delay = False
         
     def init_system_responses(self):
         self.system_responses = {
@@ -307,6 +310,8 @@ class DialogueSystem:
             return rest.iloc[0]  
         
     def print_response(self,response):
+        if self.delay:
+            time.sleep(3)
         if self.all_caps:
             print('> System:',response.upper())
         else:
