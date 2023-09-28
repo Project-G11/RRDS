@@ -303,10 +303,10 @@ class DialogueSystem:
         else:
             # extract user input requirement
             req_options = {"requirements": ["romantic", "touristic", "children", "assigned seats"]}
-            found = self.findwords(userinput, req_options)
+            info, found = self.findwords(self.info, userinput, req_options)
             # if requirement is extracted, filter existing suggestions based on requirement
             if found:
-                newsug = self.reasonOnReqs(self.info["requirements"], suggestions)
+                newsug = self.reasonOnReqs(info["requirements"], suggestions)
                 if not newsug.empty:
                     return newsug.iloc[0]
 
