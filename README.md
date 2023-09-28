@@ -17,7 +17,7 @@ Restaurant Recommendation Dialogue System
 | Add new properties in csv | Liva | Done |
 | Add additional requirements question to dialog system | Luna | Done |
 | Reasoning on additional requirement | Luna | Started |
-| Implement configurability | Liva | Not started |
+| Implement configurability | Liva | Done |
 | Clean up code | All | In progress |
 |Report--------------------------------------------------------|:--------|
 | Abstract | Open | Not started |
