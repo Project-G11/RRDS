@@ -86,8 +86,7 @@ class DialogueSystem:
             'address': ' is on ',
             'suggestion': 'is a(n)restaurant in theside of town',
             'noplace': 'Unfortunately, there is no such place.',
-            'additionalreqs': 'Do you have additional requirements?',
-            'reqnotfound': 'Unfortunately, I cannot find a restaurant that matches your additional requirements. However '
+            'additionalreqs': 'Do you have additional requirements?'
         }
         
     def init_slots(self):
@@ -127,15 +126,15 @@ class DialogueSystem:
         
         def generate_suggestion_response():
             next_state = DialogState.SUGGEST
-            suggestion = self.suggest()
+            suggestion, addresp = self.suggest()
             try:
                 system_response = self.system_responses['suggestion']
                 if self.info['pricerange'] is not None:
                     system_response = '{} {} {} {} {} {} and it is in the {} price range.'.format(
-                        suggestion.restaurantname, system_response[:7], suggestion.food, system_response[7:24], suggestion.area, system_response[24:], suggestion.pricerange)
+                        suggestion.restaurantname, system_response[:7], suggestion.food, system_response[7:24], suggestion.area, system_response[24:], suggestion.pricerange) + addresp
                     next_state = DialogState.END
                 else:
-                    system_response = '{} {} {} {}'.format(suggestion.restaurantname, system_response[:7], suggestion.food, system_response[7:24], suggestion.area, system_response[24:])
+                    system_response = '{} {} {} {}'.format(suggestion.restaurantname, system_response[:7], suggestion.food, system_response[7:24], suggestion.area, system_response[24:]) + addresp
                     next_state = DialogState.END
             except:
                 system_response = self.system_responses['noplace']
@@ -299,20 +298,19 @@ class DialogueSystem:
         suggestions = self.getSuggestion()
         # if user doesn't give additional requirements, get the first restaurant from the list
         if intent == 'negate':
-            return suggestions.iloc[0]
+            return suggestions.iloc[0], ""
         else:
             # extract user input requirement
             req_options = {"requirements": ["romantic", "touristic", "children", "assigned seats"]}
             info, found = self.findwords(self.info, userinput, req_options)
             # if requirement is extracted, filter existing suggestions based on requirement
             if found:
-                newsug = self.reasonOnReqs(info["requirements"], suggestions)
+                newsug, addreq = self.reasonOnReqs(info["requirements"], suggestions)
                 if not newsug.empty:
-                    return newsug.iloc[0]
+                    return newsug.iloc[0], addreq
 
             # if doesn't understand requirement or no restaurant exist with given requirement
-            self.print_response(self.system_responses['reqnotfound'])
-            return suggestions.iloc[0]
+            return suggestions.iloc[0], " Unfortunately, I could not find any restaurants with your additional requirement."
 
     def getSuggestion(self):
         rest = self.restaurants
@@ -332,13 +330,17 @@ class DialogueSystem:
         
     def reasonOnReqs(self, req, sugs):
         if req == "touristic":
-            return sugs[(sugs["pricerange"] == "cheap") & (sugs["quality"] == "good food") & sugs["food"] != "romanian"]
+            return sugs[(sugs["pricerange"] == "cheap") & (sugs["quality"] == "good food") & sugs["food"] != "romanian"] \
+            , " This restaurant is touristic because the food is cheap and good"
         elif req =="romantic":
-            return sugs[(sugs["staylength"] == "long stay") & (sugs["crowdedness"] == "not busy")]
+            return sugs[(sugs["staylength"] == "long stay") & (sugs["crowdedness"] == "not busy")] \
+            , " The restaurant is romantic because it allows you to stay for a long time."
         elif req =="children":
-            return sugs[sugs["staylength"] == "short stay"]
+            return sugs[sugs["staylength"] == "short stay"] \
+            , " The restaurant is good for bringing children because people usually stay a short time."
         elif req =="assigned seats":
-            return sugs[sugs["crowdedness"] == "busy"]
+            return sugs[sugs["crowdedness"] == "busy"] \
+            , " The waiter decides where you sit because the restaurant is busy."
         
     def print_response(self,response):
         if self.delay:
