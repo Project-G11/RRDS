@@ -152,7 +152,6 @@ class DialogueSystem:
             elif user_intent in ['hello', 'inform', 'affirm','confirm','request']:
                 self.info, found = self.findwords(self.info, user_utterance, self.keywords)
                     
-                print(self.info)
                 if not 'food' in self.info:
                     next_state = DialogState.ASK_FOOD_TYPE
                     system_response = self.system_responses['nofoodtype']
@@ -183,11 +182,7 @@ class DialogueSystem:
         #-- Other Replies --
         else:
             new_info, found = self.findwords(new_info, user_utterance, self.keywords)
-            print("New info:", new_info.keys() , "Info:", self.info.keys())
-            print("COMMON:", set(new_info.keys()) & set(self.info.keys()))
-            print("Info:", self.info)
             if not found:
-                print("~~NOT FOUND~~")
                 system_response = self.system_responses['notunderstand']
                 next_state = DialogState.NOT_UNDERSTAND
             else:
@@ -210,7 +205,6 @@ class DialogueSystem:
                                 self.tries['food'] = self.tries['food'] -1
                 else:
                     if 'food' in new_info:
-                        print("FOOD CHANGES")
                         self.info['food'] = new_info['food']
                 
                 if 'food' in self.info and 'area' not in self.info:
@@ -232,7 +226,6 @@ class DialogueSystem:
                                 self.tries['area'] = self.tries['area'] -1
                 elif 'food' in self.info and 'area' in self.info:
                     if 'area' in new_info:
-                        print("AREA CHANGES")
                         self.info['area'] = new_info['area']
                 
                 if 'food' in self.info and 'area' in self.info and 'pricerange' not in self.info:
@@ -257,13 +250,11 @@ class DialogueSystem:
                 if 'food' in self.info and 'area' in self.info and 'pricerange' in self.info:
                     system_response, next_state = generate_suggestion_response()
                     
-        print("Next state: ", next_state, " System response: ", system_response)
         return next_state, system_response
     
     def findwords(self, info, words, keywords):
         words = words.lower().split()
         found = False
-        # print(words)
         for word in words:
             if len(word)>3:
                 for i in keywords:
@@ -308,9 +299,35 @@ class DialogueSystem:
                 newsug, addreq = self.reasonOnReqs(info["requirements"], suggestions)
                 if not newsug.empty:
                     return newsug.iloc[0], addreq
+            
+            # User asked for address
+            request_address = {"address": ["address"]}
+            request_phone = {"phone": ["phone"]}
+            info, found_address = self.findwords(self.info, userinput, request_address)
+            info, found_phone = self.findwords(self.info, userinput, request_phone)
+            if found_address or found_phone:
+                extra_info = self.get_address_phone(info,suggestions)
+                # print(suggestions.iloc[0],extra_info)
+                return suggestions.iloc[0], extra_info
+
+            
 
             # if doesn't understand requirement or no restaurant exist with given requirement
             return suggestions.iloc[0], " Unfortunately, I could not find any restaurants with your additional requirement."
+
+    def get_address_phone(self,information,suggestions):
+        print(information)
+        if 'address' in information and not 'phone' in information:
+            print("ADDRESS IN INFORMATION")
+            return " The address is: " + suggestions.iloc[0]['addr'] + "."
+        elif 'phone' in information and 'address' not in information:
+            print("PHONE IN INFORMATION")
+            return " The phone is: " + suggestions.iloc[0]['phone'] + "."
+        else:
+            print("BOTH ADDRESS AND PHONE IN INFORMATION")
+            return " Address: " + suggestions.iloc[0]['addr']+ "." + " Phone: " + suggestions.iloc[0]['phone'] + "."
+            
+            
 
     def getSuggestion(self):
         rest = self.restaurants
