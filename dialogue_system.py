@@ -307,7 +307,6 @@ class DialogueSystem:
             info, found_phone = self.findwords(self.info, userinput, request_phone)
             if found_address or found_phone:
                 extra_info = self.get_address_phone(info,suggestions)
-                # print(suggestions.iloc[0],extra_info)
                 return suggestions.iloc[0], extra_info
 
             
@@ -318,13 +317,10 @@ class DialogueSystem:
     def get_address_phone(self,information,suggestions):
         print(information)
         if 'address' in information and not 'phone' in information:
-            print("ADDRESS IN INFORMATION")
             return " The address is: " + suggestions.iloc[0]['addr'] + "."
         elif 'phone' in information and 'address' not in information:
-            print("PHONE IN INFORMATION")
             return " The phone is: " + suggestions.iloc[0]['phone'] + "."
         else:
-            print("BOTH ADDRESS AND PHONE IN INFORMATION")
             return " Address: " + suggestions.iloc[0]['addr']+ "." + " Phone: " + suggestions.iloc[0]['phone'] + "."
             
             
