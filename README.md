@@ -7,8 +7,8 @@ Restaurant Recommendation Dialogue System
 |:-------------------------------------|:---------|:---|
 | Evaluation                       | Oliver | In progress |
 | Understand "don't care", "any", "not sure" | Christos  | In progress |
-| Understand asking for telephone or address | Christos | In progress |
-| Not substract "tries" when user changes preference | Christos | In progress |
+| Understand asking for telephone or address | Christos | Done |
+| Not substract "tries" when user changes preference | Christos | Done |
 | Add type of restaurand in suggestion | Christos | Done |
 | Simplify diagram | Christos | Done |
 | Make sure all feedback has been processed part 1a| Justus | Blocked |
