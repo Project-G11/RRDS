@@ -252,6 +252,7 @@ class DialogueSystem:
                     
         return next_state, system_response
     
+    # Finds keywords that provide information for the system in the user input
     def findwords(self, info, words, keywords):
         words = words.lower().split()
         found = False
@@ -281,6 +282,7 @@ class DialogueSystem:
                                 found = True
         return info, found
     
+    # Provides recommended restaurants based on the preferences of the user
     def suggest(self):
         # ask for additional requirements
         self.print_response(self.system_responses['additionalreqs'])
@@ -314,6 +316,7 @@ class DialogueSystem:
             # if doesn't understand requirement or no restaurant exist with given requirement
             return suggestions.iloc[0], " Unfortunately, I could not find any restaurants with your additional requirement."
 
+    # Provides the user with the address and phone number of the recommended restaurant if these are availabale
     def get_address_phone(self,information,suggestions):
         print(information)
         if 'address' in information and not 'phone' in information:
@@ -323,21 +326,18 @@ class DialogueSystem:
         else:
             return " Address: " + suggestions.iloc[0]['addr']+ "." + " Phone: " + suggestions.iloc[0]['phone'] + "."
             
-            
-
+    # Finds restaurants that correspond to the wishes of the user        
     def getSuggestion(self):
         rest = self.restaurants
         area = self.info['area']
         food = self.info['food']
         price = self.info['pricerange']
-
         if (area):
             rest = rest[rest['area'] == area]
         if (food):
             rest = rest[rest['food'] == food]
         if (price):
-            rest = rest[rest['pricerange'] == price]
-            
+            rest = rest[rest['pricerange'] == price]   
         if not rest.empty:
             return rest  
         
@@ -354,7 +354,8 @@ class DialogueSystem:
         elif req =="assigned seats":
             return sugs[sugs["crowdedness"] == "busy"] \
             , " The waiter decides where you sit because the restaurant is busy."
-        
+
+    # Prints system output   
     def print_response(self,response):
         if self.delay:
             time.sleep(3)
