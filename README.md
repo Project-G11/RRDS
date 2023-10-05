@@ -6,7 +6,7 @@ Restaurant Recommendation Dialogue System
 | Task                                | Assigned to | Progress |
 |:-------------------------------------|:---------|:---|
 | Evaluation                       | Oliver | In progress |
-| Understand "don't care", "any", "not sure" | Christos  | In progress |
+| Understand "don't care", "any", "not sure" | Christos  | Done |
 | Understand asking for telephone or address | Christos | Done |
 | Not substract "tries" when user changes preference | Christos | Done |
 | Add type of restaurand in suggestion | Christos | Done |
