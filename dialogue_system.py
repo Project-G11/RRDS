@@ -5,8 +5,6 @@ from transformers import BertTokenizer
 import Levenshtein
 import pandas as pd
 import os
-import random
-import csv
 import time
 
 
@@ -101,6 +99,9 @@ class DialogueSystem:
             "food": [str(kw).lower().strip() for kw in self.restaurants.food.unique().tolist()],
         }
         
+        self.any = ["any", "anything", "every", "all"]
+        
+        
     def preprocess_sentence(self,sentence, max_words):
         tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
         token_ids = tokenizer.encode(sentence, max_length=max_words, truncation=True, padding='max_length')
@@ -150,7 +151,7 @@ class DialogueSystem:
                 next_state = DialogState.ASK_FOOD_TYPE
                 system_response = self.system_responses['nofoodtype']
             elif user_intent in ['hello', 'inform', 'affirm','confirm','request']:
-                self.info, found = self.findwords(self.info, user_utterance, self.keywords)
+                self.info, found = self.findwords(self.info, user_utterance, self.keywords, current_state)
                     
                 if not 'food' in self.info:
                     next_state = DialogState.ASK_FOOD_TYPE
@@ -181,7 +182,7 @@ class DialogueSystem:
         
         #-- Other Replies --
         else:
-            new_info, found = self.findwords(new_info, user_utterance, self.keywords)
+            new_info, found = self.findwords(new_info, user_utterance, self.keywords, current_state)
             if not found:
                 system_response = self.system_responses['notunderstand']
                 next_state = DialogState.NOT_UNDERSTAND
@@ -253,7 +254,7 @@ class DialogueSystem:
         return next_state, system_response
     
     # Finds keywords that provide information for the system in the user input
-    def findwords(self, info, words, keywords):
+    def findwords(self, info, words, keywords, current_state=None):
         words = words.lower().split()
         found = False
         for word in words:
@@ -280,6 +281,35 @@ class DialogueSystem:
                             if word == j:
                                 info[i] = j
                                 found = True
+        
+        if found == False:
+            if current_state != None:
+                for word in words:
+                    for candidate in self.any:
+                        if Levenshtein.distance(word, candidate) < 2:
+                            if current_state == DialogState.ASK_FOOD_TYPE:
+                                info['food'] = 'any'
+                                found = True
+                            elif current_state == DialogState.ASK_AREA:
+                                info['area'] = 'any'
+                                found = True
+                            elif current_state == DialogState.ASK_PRICE_RANGE:
+                                info['pricerange'] = 'any'
+                                found = True
+                            elif current_state == DialogState.NOT_UNDERSTAND:
+                                if 'food' not in self.info:
+                                    info['food'] = 'any'
+                                    found = True
+                                elif 'area' not in self.info:
+                                    info['area'] = 'any'
+                                    found = True
+                                elif 'price' not in self.info:
+                                    info['pricerange'] = 'any'
+                                    found = True
+                            break 
+                    if found:
+                        break  
+        
         return info, found
     
     # Provides recommended restaurants based on the preferences of the user
@@ -332,11 +362,11 @@ class DialogueSystem:
         area = self.info['area']
         food = self.info['food']
         price = self.info['pricerange']
-        if (area):
+        if area and area != 'any':
             rest = rest[rest['area'] == area]
-        if (food):
+        if food and food != 'any':
             rest = rest[rest['food'] == food]
-        if (price):
+        if price and price != 'any':
             rest = rest[rest['pricerange'] == price]   
         if not rest.empty:
             return rest  
