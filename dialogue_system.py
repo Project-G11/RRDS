@@ -269,7 +269,7 @@ class DialogueSystem:
                                     info[i] = j
                                     found = True
                                 if Levenshtein.distance(word, j) < 2:
-                                    self.print_response("Did you mean " + j + " by " + word + "?")
+                                    self.print_response(current_state, "Did you mean " + j + " by " + word + "?")
                                     userinput = input(">>> ").lower()
                                     user_intent = self.classify_intent(userinput)
                                     if user_intent in ['affirm']:
@@ -317,7 +317,7 @@ class DialogueSystem:
     # Provides recommended restaurants based on the preferences of the user
     def suggest(self):
         # ask for additional requirements
-        self.print_response(self.system_responses['additionalreqs'])
+        self.print_response('', self.system_responses['additionalreqs'])
         userinput = input(">>> ").lower()
         intent = self.classify_intent(userinput)
         suggestions = self.getSuggestion()
