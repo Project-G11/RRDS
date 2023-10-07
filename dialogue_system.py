@@ -183,9 +183,11 @@ class DialogueSystem:
         #-- Other Replies --
         else:
             new_info, found = self.findwords(new_info, user_utterance, self.keywords, current_state)
-            if not found:
+            if not found and user_intent != 'bye':
                 system_response = self.system_responses['notunderstand']
                 next_state = DialogState.NOT_UNDERSTAND
+            elif user_intent == 'bye':
+                next_state = DialogState.GOODBYE
             else:
                 if 'food' not in self.info:
                     if new_info is not None and 'food' in new_info:
@@ -348,7 +350,6 @@ class DialogueSystem:
 
     # Provides the user with the address and phone number of the recommended restaurant if these are availabale
     def get_address_phone(self,information,suggestions):
-        print(information)
         if 'address' in information and not 'phone' in information:
             return " The address is: " + suggestions.iloc[0]['addr'] + "."
         elif 'phone' in information and 'address' not in information:
@@ -386,26 +387,28 @@ class DialogueSystem:
             , " The waiter decides where you sit because the restaurant is busy."
 
     # Prints system output   
-    def print_response(self,response):
-        if self.delay:
-            time.sleep(3)
-        if self.all_caps:
-            print('> System:',response.upper())
+    def print_response(self,state,response):
+        if state == DialogState.GOODBYE:
+            print("System: Goodbye!")
         else:
-            print('> System:',response)
+            if self.delay:
+                time.sleep(3)
+            if self.all_caps:
+                print('> System:',response.upper())
+            else:
+                print('> System:',response)
     
     def run_dialogue(self):
         # Clear console
         os.system('cls')
         # Default state
         current_state = DialogState.INIT
-        self.print_response(self.system_responses['greet'])
+        self.print_response(current_state, self.system_responses['greet'])
         # Iterative dialogue until user ends the conversation       
         while current_state not in [DialogState.END, DialogState.GOODBYE]:
             user_utterance = input(">>> ").lower()
             current_state, system_response = self.state_transition(current_state, user_utterance)
-   
-            self.print_response(system_response)
+            self.print_response(current_state, system_response)
             
             if current_state == DialogState.END:
                 break
