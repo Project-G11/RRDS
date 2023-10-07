@@ -23,6 +23,7 @@ class NNClassifier:
         labels_train = np.array(labels_train)
         labels_test = np.array(labels_test)
         
+        # Function that uses pre-trained tokenizer to tokenize sentences and labels
         def tokenize_sentences(list,max_words):
             tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
             token_ids = [tokenizer.encode(sentence, max_length=max_words, truncation=True, padding='max_length') for sentence in list]
@@ -31,15 +32,15 @@ class NNClassifier:
         X_train = tokenize_sentences(insts_train,max_words)
         X_test = tokenize_sentences(insts_test,max_words)
 
-        def map_labels(labels_train,length):
-            unique_labels = np.unique(labels_train)
+        def map_labels(labels,length):
+            unique_labels = np.unique(labels)
             label_mapping={}
             i=0
             for label in unique_labels:
                 label_mapping[label] = i
                 i+=1
-            labels_train_int = [label_mapping[label] for label in labels_train]
-            one_hot_labels = keras.utils.to_categorical(labels_train_int, num_classes=length)
+            labels_int = [label_mapping[label] for label in labels]
+            one_hot_labels = keras.utils.to_categorical(labels_int, num_classes=length)
             return one_hot_labels
 
         y_train = map_labels(labels_train,len(classes))        
@@ -51,7 +52,6 @@ class NNClassifier:
         model.add(Embedding(input_dim=X_train.max()+1, output_dim=50, input_length=max_words))
         model.add(Flatten())
         model.add(Dense(64, activation='relu'))
-        # model.add(keras.layers.Dropout(0.25))
         model.add(Dense(len(classes), activation='softmax'))  
 
         model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
