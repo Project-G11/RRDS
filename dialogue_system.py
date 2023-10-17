@@ -84,7 +84,12 @@ class DialogueSystem:
             'address': ' is on ',
             'suggestion': 'is a(n)restaurant in theside of town',
             'noplace': 'Unfortunately, there is no such place.',
-            'additionalreqs': 'Do you have additional requirements?'
+            'additionalreqs': 'Do you have additional requirements?',
+            'noAddReqs': " Unfortunately, I could not find any restaurants with your additional requirement.",
+            'romantic': " The restaurant is romantic because it allows you to stay for a long time.",
+            'touristic': " This restaurant is touristic because the food is cheap and good",
+            'assSeats': " The waiter decides where you sit because the restaurant is busy.",
+            'children': " The restaurant is good for bringing children because people usually stay a short time." 
         }
         
     def init_slots(self):
@@ -346,16 +351,16 @@ class DialogueSystem:
             
 
             # if doesn't understand requirement or no restaurant exist with given requirement
-            return suggestions.iloc[0], " Unfortunately, I could not find any restaurants with your additional requirement."
+            return suggestions.iloc[0], self.system_responses['noAddReqs']
 
     # Provides the user with the address and phone number of the recommended restaurant if these are availabale
     def get_address_phone(self,information,suggestions):
         if 'address' in information and not 'phone' in information:
-            return " The address is: " + suggestions.iloc[0]['addr'] + "."
+            return self.system_responses['address'] + suggestions.iloc[0]['addr'] + "."
         elif 'phone' in information and 'address' not in information:
-            return " The phone is: " + suggestions.iloc[0]['phone'] + "."
+            return self.system_responses['phone'] + suggestions.iloc[0]['phone'] + "."
         else:
-            return " Address: " + suggestions.iloc[0]['addr']+ "." + " Phone: " + suggestions.iloc[0]['phone'] + "."
+            return self.system_responses['address'] + suggestions.iloc[0]['addr']+ "." + self.system_responses['phone'] + suggestions.iloc[0]['phone'] + "."
             
     # Finds restaurants that correspond to the wishes of the user        
     def getSuggestion(self):
@@ -375,16 +380,16 @@ class DialogueSystem:
     def reasonOnReqs(self, req, sugs):
         if req == "touristic":
             return sugs[(sugs["pricerange"] == "cheap") & (sugs["quality"] == "good food") & sugs["food"] != "romanian"] \
-            , " This restaurant is touristic because the food is cheap and good"
+            , self.system_responses['touristic']
         elif req =="romantic":
             return sugs[(sugs["staylength"] == "long stay") & (sugs["crowdedness"] == "not busy")] \
-            , " The restaurant is romantic because it allows you to stay for a long time."
+            , self.system_responses['romantic']
         elif req =="children":
             return sugs[sugs["staylength"] == "short stay"] \
-            , " The restaurant is good for bringing children because people usually stay a short time."
+            , self.system_responses['children']
         elif req =="assigned seats":
             return sugs[sugs["crowdedness"] == "busy"] \
-            , " The waiter decides where you sit because the restaurant is busy."
+            , self.system_responses['assSeats']
 
     # Prints system output   
     def print_response(self,state,response):

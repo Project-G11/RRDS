@@ -1,0 +1,47 @@
+// formal
+self.system_responses = {
+            'greet': "Hello, welcome to the G11's restaurant system. You can ask for restaurants by area, price range, or food type. How may I help you?",
+            'noarea':'What area do you prefer?',
+            'nofoodtype': 'What type of food would you prefer?',
+            'nopricerange': 'Would you like something in the cheap, moderate, or expensive price range?',
+            'anyfood': 'Are you looking for a restaurant serving any kind of food?',
+            'anyplace': 'Are you looking for a restaurant at any place?',
+            'anyprice': 'Are you looking for a restaurant with any price?',
+            'goodbye': 'Goodbye.',
+            'thankyou': "You are welcome.",
+            'notunderstand': "Sorry, I did not understand your request. Please repeat.", 
+            'phone': 'Phone: ',
+            'address': 'Address: ',
+            'suggestion': 'is a(n)restaurant in the area.',
+            'noplace': 'Unfortunately, there is no restaurant that meets your preferences.',
+            'additionalreqs': 'Do you have additional requirements?',
+            'noAddReqs': " Unfortunately, there is no restaurant that meets your additional requirement.",
+            'romantic': " The restaurant is romantic because it allows you to stay for a long time.",
+            'touristic': " The restaurant is touristic because the food is cheap and good",
+            'assSeats': " The waiter decides where you sit because the restaurant is busy.",
+            'children': " The restaurant is good for bringing children because people stay a short time." 
+        }
+
+// informal
+self.system_responses = {
+            'greet': "Hello, welcome! I'm here to help you find the restaurant of your choice, but first I need to know your prefences. What are you looking for?",
+            'noarea':'What part of town do you have in mind?',
+            'nofoodtype': 'What kind of food are you in the mood for?',
+            'nopricerange': 'What price range fits your budget?',
+            'anyfood': 'You're up for any kind of food, right?',
+            'anyplace': 'So you're open to a restaurant in any place?',
+            'anyprice': 'You don't have a specific budget in mind?',
+            'goodbye': 'Bye!',
+            'thankyou': "You're welcome!",
+            'notunderstand': "Sorry, I didn't get that. Can you rephrase?", 
+            'phone': 'The phone number for the restaurant is ',
+            'address': 'The restaurant is on ',
+            'suggestion': 'is a(n) restaurant in the side of town',
+            'noplace': 'Sorry, I couldn't find such a place.',
+            'additionalreqs': 'Do you maybe have any more wishes?',
+            'noAddReqs': " Sorry, I couldn't find any place that meets all your wishes.",
+            'romantic': " This is a romantic restaurant, because people are usually staying for quite some time.",
+            'touristic': " The food in this restaurant is cheap and good, which tourists like.",
+            'assSeats': " This restaurant has asisgned seats because it's usually very busy.",
+            'children': " This is a nice restaurant for kids, cause people usually stay for a short time." 
+        }
