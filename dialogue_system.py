@@ -64,32 +64,26 @@ class DialogueSystem:
         
     def init_system_responses(self):
         self.system_responses = {
-            'greet': "Hello, welcome to the G11's restaurant system? You can ask for restaurants by area, price range, or food type. How may I help you?",
+            'greet': "Hello, welcome! I'm here to help you find the restaurant of your choice, but first I need to know your prefences. What are you looking for?",
             'noarea':'What part of town do you have in mind?',
-            'nofoodtype': 'What kind of food would you like?',
-            'nopricerange': 'Would you like something in the cheap , moderate , or expensive price range?',
-            'affirmpricerange':' restaurant is in the pricerange',
-            'affirmarea': ' restaurant is in the part of town',
-            'affirmfoodtype': ' restaurant is serving food',
-            'confirmfoodtype': 'You are looking for a restaurant right?',
-            'confirmarea': 'You are looking for a restaurant in the part of town right?',
-            'confirmpricerange': 'You are looking for a restaurant in the pricerange right?',
-            'anyfood': 'You are looking for a restaurant serving any kind of food?',
-            'anyplace': 'You are looking for a restaurant at any place?',
-            'anyprice': 'You are looking for a restaurant with any price?',
-            'goodbye': 'Goodbye!',
-            'thankyou': "You're welcome",
-            'notunderstand': "Sorry, I didn't understand your request. Please repeat.", 
-            'phone': 'The phone number for is ',
-            'address': ' is on ',
+            'nofoodtype': 'What kind of food are you in the mood for?',
+            'nopricerange': 'What price range fits your budget?',
+            'anyfood': "You're up for any kind of food, right?",
+            'anyplace': "So you're open to a restaurant in any place?",
+            'anyprice': "You don't have a specific budget in mind?",
+            'goodbye': 'Bye!',
+            'thankyou': "You're welcome!",
+            'notunderstand': "Sorry, I didn't get that. Can you rephrase?", 
+            'phone': 'The phone number for the restaurant is ',
+            'address': 'The restaurant is on ',
             'suggestion': 'is a(n)restaurant in theside of town',
-            'noplace': 'Unfortunately, there is no such place.',
-            'additionalreqs': 'Do you have additional requirements?',
-            'noAddReqs': " Unfortunately, I could not find any restaurants with your additional requirement.",
-            'romantic': " The restaurant is romantic because it allows you to stay for a long time.",
-            'touristic': " This restaurant is touristic because the food is cheap and good",
-            'assSeats': " The waiter decides where you sit because the restaurant is busy.",
-            'children': " The restaurant is good for bringing children because people usually stay a short time." 
+            'noplace': "Sorry, I couldn't find such a place.",
+            'additionalreqs': 'Do you maybe have any more wishes?',
+            'noAddReqs': "Sorry, I couldn't find any place that meets all your wishes.",
+            'romantic': "This is a romantic restaurant, because people are usually staying for quite some time.",
+            'touristic': "The food in this restaurant is cheap and good, which tourists like.",
+            'assSeats': "This restaurant has asisgned seats because it's usually very busy.",
+            'children': "This is a nice restaurant for kids, cause people usually stay for a short time." 
         }
         
     def init_slots(self):
@@ -410,10 +404,21 @@ class DialogueSystem:
         else:
             if self.delay:
                 time.sleep(3)
-            if self.all_caps:
-                print('> System:',response.upper())
+                if self.all_caps:
+                    for char in '> System: ' + response.upper():
+                        print(char, end='', flush=True) 
+                        time.sleep(0.1)
+                    print()
+                else:
+                    for char in '> Guide: ' + response():
+                        print(char, end='', flush=True)  
+                        time.sleep(0.1)
+                    print()
             else:
-                print('> System:',response)
+                if self.all_caps:
+                    print('> System:',response.upper())
+                else: 
+                    print('> Guide:',response)
     
     def run_dialogue(self):
         # Clear console
