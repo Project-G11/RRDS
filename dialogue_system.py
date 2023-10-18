@@ -124,7 +124,7 @@ class DialogueSystem:
     def state_transition(self,current_state,user_utterance):
         # Predicting the user's intent
         user_intent = self.classify_intent(user_utterance)
-        print(user_intent)
+        # print(user_intent)
         # Initialize default system_response and next_state
         system_response = 'null'
         next_state = ''
@@ -328,16 +328,22 @@ class DialogueSystem:
         suggestions = self.getSuggestion()
         # if user doesn't give additional requirements, get the first restaurant from the list
         if intent == 'negate':
-            return suggestions.iloc[0], ""
+            try:
+                return suggestions.iloc[0], ""
+            except:
+                return ' ', ' '
         else:
             # extract user input requirement
             req_options = {"requirements": ["romantic", "touristic", "children", "assigned seats"]}
             info, found = self.findwords(self.info, userinput, req_options)
             # if requirement is extracted, filter existing suggestions based on requirement
             if found:
-                newsug, addreq = self.reasonOnReqs(info["requirements"], suggestions)
-                if not newsug.empty:
-                    return newsug.iloc[0], addreq
+                try:
+                    newsug, addreq = self.reasonOnReqs(info["requirements"], suggestions)
+                    if not newsug.empty:
+                        return newsug.iloc[0], addreq
+                except:
+                    return ' ', ' '
             
             # User asked for address
             request_address = {"address": ["address"]}
@@ -345,8 +351,11 @@ class DialogueSystem:
             info, found_address = self.findwords(self.info, userinput, request_address)
             info, found_phone = self.findwords(self.info, userinput, request_phone)
             if found_address or found_phone:
-                extra_info = self.get_address_phone(info,suggestions)
-                return suggestions.iloc[0], extra_info
+                try:
+                    extra_info = self.get_address_phone(info,suggestions)
+                    return suggestions.iloc[0], extra_info
+                except:
+                    return ' ', ' '
 
             
 
@@ -378,18 +387,21 @@ class DialogueSystem:
             return rest  
         
     def reasonOnReqs(self, req, sugs):
-        if req == "touristic":
-            return sugs[(sugs["pricerange"] == "cheap") & (sugs["quality"] == "good food") & sugs["food"] != "romanian"] \
-            , self.system_responses['touristic']
-        elif req =="romantic":
-            return sugs[(sugs["staylength"] == "long stay") & (sugs["crowdedness"] == "not busy")] \
-            , self.system_responses['romantic']
-        elif req =="children":
-            return sugs[sugs["staylength"] == "short stay"] \
-            , self.system_responses['children']
-        elif req =="assigned seats":
-            return sugs[sugs["crowdedness"] == "busy"] \
-            , self.system_responses['assSeats']
+        try:
+            if req == "touristic":
+                return sugs[(sugs["pricerange"] == "cheap") & (sugs["quality"] == "good food") & sugs["food"] != "romanian"] \
+                , self.system_responses['touristic']
+            elif req =="romantic":
+                return sugs[(sugs["staylength"] == "long stay") & (sugs["crowdedness"] == "not busy")] \
+                , self.system_responses['romantic']
+            elif req =="children":
+                return sugs[sugs["staylength"] == "short stay"] \
+                , self.system_responses['children']
+            elif req =="assigned seats":
+                return sugs[sugs["crowdedness"] == "busy"] \
+                , self.system_responses['assSeats']
+        except:
+            return ' '
 
     # Prints system output   
     def print_response(self,state,response):
